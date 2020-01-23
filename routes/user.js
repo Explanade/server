@@ -7,7 +7,7 @@ router.post('/register', UserController.register)
 router.post('/login', UserController.login)
 router.post('/googleLogin', UserController.googleLogin)
 router.get('/myprofile', authentication, UserController.findOne)
-router.get('/mybookmark', authentication, UserController.myBookmark)
+router.get('/myitinerary', authentication, UserController.myItinerary)
 router.post('/subscribe', UserController.subscribe)
 router.delete('/:id', authentication, UserController.remove)
 

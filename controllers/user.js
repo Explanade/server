@@ -121,12 +121,12 @@ class UserController {
             .catch(next)
     }
 
-    static myBookmark(req, res, next) {
+    static myItineraries(req, res, next) {
         let author = req.loggedUser.id
-        User.findOne({ _id: author }, 'bookmarks')
-            .populate('bookmarks')
-            .then(bookmark => {
-                res.status(200).json(bookmark)
+        User.findOne({ _id: author }, 'itineraries')
+            .populate('itineraries')
+            .then(itineraries => {
+                res.status(200).json(itineraries)
             })
             .catch(next)
     }

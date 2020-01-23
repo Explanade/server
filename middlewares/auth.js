@@ -1,5 +1,5 @@
 const { decodeToken } = require('../helpers/jwt')
-const Article = require('../models/article')
+const Itinerary = require('../models/itinerary')
 const User = require('../models/user')
 
 
@@ -23,10 +23,10 @@ const authentication = (req, res, next) => {
 async function authorization(req, res, next) {
   try {
     console.log(req.loggedUser)
-    let author = req.loggedUser.id
+    let user_id = req.loggedUser.id
     let { id } = req.params
-    let findArticle = await Article.findOne({ _id: id }, { author })
-    if (findArticle) {
+    let findItinerary = await Itinerary.findOne({ _id: id }, { user_id })
+    if (findItinerary) {
       next()
     } else {
       next({ status: 403, message: 'You are not authorized to perform this action' })

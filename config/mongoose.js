@@ -9,8 +9,8 @@ mongoose.connect(db, {
     useFindAndModify: false
 })
     .then(() => {
-        console.log(`perspective connected to atlas`)
+        console.log(`explanade connected to atlas`)
     })
     .catch((err) => {
-        console.log(err, 'perspective failed connect to database')
+        console.log(err, 'explanade failed connect to database')
     })
