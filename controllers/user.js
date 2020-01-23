@@ -90,6 +90,7 @@ class UserController {
         })
             .then(ticket => {
                 googlePayload = ticket.getPayload()
+                console.log(googlePayload)
                 return User.findOne({
                     email: googlePayload.email
                 })
@@ -102,7 +103,7 @@ class UserController {
                         name: googlePayload.name,
                         email: googlePayload.email,
                         password: process.env.PASSWORD_USER,
-                        profile_picture = googlePayload.profile_picture
+                        profile_picture = googlePayload.picture
                     })
                 }
             })
