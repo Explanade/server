@@ -66,7 +66,7 @@ class UserController {
             .then(foundUser => {
                 console.log(foundUser)
                 if (!foundUser) {
-                    next({ status: 403, message: 'Invalid password or email' })
+                    next({ status: 400, message: 'Invalid password or email' })
                 } else {
 
                     let authPass = compare(password, foundUser.password)
@@ -80,7 +80,7 @@ class UserController {
                         const token = generateToken(user)
                         res.status(200).json({ token, user })
                     } else {
-                        next({ status: 403, message: 'Invalid password or email' })
+                        next({ status: 400, message: 'Invalid password or email' })
                     }
                 }
             })
