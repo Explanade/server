@@ -1,6 +1,8 @@
 const mongoose = require("mongoose")
-// const db = process.env.URL_DB
-const db = process.env.MONGO_ATLAS
+const db = process.env.URL_DB + '-' + process.env.NODE_ENV
+console.log(process.env.MONGO_ATLAS)
+console.log(db)
+// const db = process.env.MONGO_ATLAS + '-' + process.env.NODE_ENV
 
 mongoose.connect(db, {
     useNewUrlParser: true,
@@ -9,8 +11,8 @@ mongoose.connect(db, {
     useFindAndModify: false
 })
     .then(() => {
-        console.log(`explanade connected to atlas`)
+        console.log(`Explanade connected to atlas`)
     })
     .catch((err) => {
-        console.log(err, 'explanade failed connect to database')
+        console.log(err, 'Explanade failed connect to database')
     })

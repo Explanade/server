@@ -1,26 +1,23 @@
 const { decodeToken } = require('../helpers/jwt')
-const Itinerary = require('../models/itinerary')
+// const Itinerary = require('../models/itinerary')
 const User = require('../models/user')
 
 
-const authentication = (req, res, next) => {
+const authentication = async (req, res, next) => {
   try {
     req.loggedUser = decodeToken(req.headers.token)
-    User.findOne({
+    const user = await User.findOne({
       email: req.loggedUser.email
     })
-      .then(user => {
-        if (user) next()
-        else throw new Error({ status: 401, message: 'Authentication Failed' })
-      })
-      .catch(next)
+    if (user) next()
+    else throw ({ status: 401, message: 'Authentication Failed' })
   }
   catch (error) {
     next(error)
   }
 }
 
-async function authorization(req, res, next) {
+const authorization = async (req, res, next) => {
   try {
     console.log(req.loggedUser)
     let user_id = req.loggedUser.id
@@ -37,6 +34,9 @@ async function authorization(req, res, next) {
 
 }
 
-module.exports = { authentication, authorization }
+module.exports = {
+  authentication,
+  authorization
+}
 
 

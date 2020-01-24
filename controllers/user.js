@@ -2,20 +2,25 @@ const User = require('../models/user'),
     { compare } = require('../helpers/bcrypt'),
     { generateToken } = require('../helpers/jwt'),
     { OAuth2Client } = require('google-auth-library'),
-    mailer = require("../helpers/nodemailer")
+    mailer = require("../helpers/nodemailer"),
+    toUpdate = require('../helpers/updateField'),
+    removeGCS = require('../helpers/removeGCS');
 
 class UserController {
 
     static register(req, res, next) {
+        console.log('masuk')
         let { name, email, password } = req.body
+        // console.log(req.body)
+        let profile_picture = ''
         if (req.file) {
             profile_picture = req.file.cloudStoragePublicUrl
         } else {
             profile_picture = `https://ui-avatars.com/api/?name=${name}&rounded=true`
         }
         User.create({ name, email, password, profile_picture })
-            .then(newUser => {
-                res.status(201).json(newUser)
+            .then(user => {
+                res.status(201).json(user)
             })
             .catch(next)
     }
@@ -23,15 +28,17 @@ class UserController {
     static updateProfile(req, res, next) {
         let id = req.loggedUser.id
         let dataChanged = toUpdate(["name", "email"], req.body)
+        // console.log(req.body, req.file)
         if (req.file) {
             dataChanged.profile_picture = req.file.cloudStoragePublicUrl
             User.findById(id)
                 .then(user => {
+                    console.log(user)
                     removeGCS(user.profile_picture)
-                    return User.updateOne({ _id: id }, dataChanged)
+                    return User.updateOne({ _id: id }, dataChanged, { new: true })
                 })
-                .then(user => {
-                    res.status(201).json({ user, message: 'success updated profile' })
+                .then(updated => {
+                    res.status(201).json({ updated, message: 'success update profile' })
                 })
                 .catch(next)
         } else {
@@ -39,7 +46,7 @@ class UserController {
                 .select('profile_picture')
                 .then(user => {
                     dataChanged.profile_picture = user.profile_picture
-                    return User.updateOne({ _id: id }, dataChanged)
+                    return User.updateOne({ _id: id }, dataChanged, { new: true })
                 })
                 .then(updated => {
                     res.status(200).json(updated)
@@ -50,28 +57,28 @@ class UserController {
     }
 
     static login(req, res, next) {
-        console.log(req.body);
+        // console.log(req.body);
         let { email, password } = req.body
+        // console.log(req.body)
         User.findOne({
             email: email
         })
-            .then(user => {
-                if (!user) {
+            .then(foundUser => {
+                console.log(foundUser)
+                if (!foundUser) {
                     next({ status: 403, message: 'Invalid password or email' })
                 } else {
 
-                    let authPass = compare(password, user.password)
+                    let authPass = compare(password, foundUser.password)
                     if (authPass) {
-                        let name = user.name,
-                            email = user.email,
-                            _id = user._id;
+                        let user = {
+                            name: foundUser.name,
+                            email: foundUser.email,
+                            id: foundUser._id
+                        }
 
-                        const token = generateToken({
-                            name: name,
-                            email: email,
-                            id: _id
-                        })
-                        res.status(200).json({ token, name, email })
+                        const token = generateToken(user)
+                        res.status(200).json({ token, user })
                     } else {
                         next({ status: 403, message: 'Invalid password or email' })
                     }
@@ -90,6 +97,7 @@ class UserController {
         })
             .then(ticket => {
                 googlePayload = ticket.getPayload()
+                // console.log(googlePayload)
                 return User.findOne({
                     email: googlePayload.email
                 })
@@ -102,26 +110,23 @@ class UserController {
                         name: googlePayload.name,
                         email: googlePayload.email,
                         password: process.env.PASSWORD_USER,
-                        profile_picture = googlePayload.profile_picture
+                        profile_picture: googlePayload.picture
                     })
                 }
             })
-            .then(user => {
-                let name = user.name,
-                    email = user.email,
-                    id = user._id;
-                let payload = {
-                    id: id,
-                    name: name,
-                    email: email
+            .then(newUser => {
+                let user = {
+                    name: newUser.name,
+                    email: newUser.email,
+                    id: newUser._id
                 },
-                    token = generateToken(payload)
-                res.status(200).json({ token, name, email })
+                    token = generateToken(user)
+                res.status(200).json({ token, user })
             })
             .catch(next)
     }
 
-    static myItineraries(req, res, next) {
+    static myItinerary(req, res, next) {
         let author = req.loggedUser.id
         User.findOne({ _id: author }, 'itineraries')
             .populate('itineraries')
@@ -150,8 +155,7 @@ class UserController {
     }
 
     static remove(req, res, next) {
-        let { id } = req.params
-        User.remove({ _id: author })
+        User.deleteOne({ _id: req.loggedUser.id })
             .then(userdeleted => {
                 res.status(200).json(userdeleted)
             })
