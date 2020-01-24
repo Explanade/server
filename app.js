@@ -1,4 +1,4 @@
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'test') {
   require('dotenv').config()
 }
 
@@ -8,15 +8,10 @@ const cors = require("cors")
 const morgan = require("morgan")
 const app = express()
 const routes = require("./routes")
-var bodyParser = require('body-parser')
 const { errorHandler } = require("./middlewares/errorHandler")
 
 
 app.use(cors())
-// app.use(bodyParser.urlencoded({ extended: true }))
-// app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }))
-// app.use(bodyParser.json({ type: 'application/*+json' }))
-// app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(morgan("dev"))
