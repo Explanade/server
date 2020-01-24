@@ -102,7 +102,7 @@ class UserController {
                         name: googlePayload.name,
                         email: googlePayload.email,
                         password: process.env.PASSWORD_USER,
-                        profile_picture = googlePayload.profile_picture
+                        profile_picture: googlePayload.profile_picture
                     })
                 }
             })
