@@ -3,7 +3,8 @@ const User = require('../models/user'),
     { generateToken } = require('../helpers/jwt'),
     { OAuth2Client } = require('google-auth-library'),
     mailer = require("../helpers/nodemailer"),
-    toUpdate = require('../helpers/updateField')
+    toUpdate = require('../helpers/updateField'),
+    removeGCS = require('../helpers/removeGCS');
 
 class UserController {
 
@@ -27,7 +28,7 @@ class UserController {
     static updateProfile(req, res, next) {
         let id = req.loggedUser.id
         let dataChanged = toUpdate(["name", "email"], req.body)
-        console.log(req.file)
+        // console.log(req.file)
         if (req.file) {
             dataChanged.profile_picture = req.file.cloudStoragePublicUrl
             User.findById(id)
@@ -156,8 +157,7 @@ class UserController {
     }
 
     static remove(req, res, next) {
-        let { id } = req.params
-        User.remove({ _id: author })
+        User.remove({ _id: req.loggedUser.id })
             .then(userdeleted => {
                 res.status(200).json(userdeleted)
             })
