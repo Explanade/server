@@ -12,6 +12,7 @@ router.get('/profile', authentication, UserController.findOne)
 router.patch('/update', authentication, multer.single('profile_picture'), sendUploadToGCS, UserController.updateProfile)
 router.get('/myitinerary', authentication, UserController.myItinerary)
 router.delete('/', authentication, UserController.remove)
+=
 
 
 module.exports = router

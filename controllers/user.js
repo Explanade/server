@@ -5,6 +5,7 @@ const User = require('../models/user'),
     toUpdate = require('../helpers/updateField'),
     removeGCS = require('../helpers/removeGCS');
 
+
 class UserController {
 
     static register(req, res, next) {
@@ -47,11 +48,11 @@ class UserController {
                     res.status(200).json({ updated, message: 'success update profile' })
                 })
                 .catch(next)
-
         }
     }
 
     static login(req, res, next) {
+
         let { email, password } = req.body
         User.findOne({
             email: email
@@ -68,7 +69,6 @@ class UserController {
                             email: foundUser.email,
                             id: foundUser._id
                         }
-
                         const token = generateToken(user)
                         res.status(200).json({ token, user })
                     } else {
@@ -113,6 +113,7 @@ class UserController {
                 },
                     token = generateToken(user)
                 res.status(200).json({ token, user })
+
             })
             .catch(next)
     }

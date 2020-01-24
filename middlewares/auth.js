@@ -1,5 +1,4 @@
 const { decodeToken } = require('../helpers/jwt')
-// const Itinerary = require('../models/itinerary')
 const User = require('../models/user')
 
 
@@ -37,5 +36,4 @@ module.exports = {
   authentication,
   // authorization
 }
-
 
