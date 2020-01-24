@@ -11,8 +11,8 @@ router.post('/googleLogin', UserController.googleLogin)
 router.get('/profile', authentication, UserController.findOne)
 router.patch('/update', authentication, multer.single('profile_picture'), sendUploadToGCS, UserController.updateProfile)
 router.get('/myitinerary', authentication, UserController.myItinerary)
-router.post('/subscribe', UserController.subscribe)
 router.delete('/', authentication, UserController.remove)
+=
 
 
 module.exports = router

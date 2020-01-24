@@ -10,4 +10,5 @@ router.use('/itineraries', itinerary)
 router.use('/activities', activity)
 router.use('/reviews', review)
 
+
 module.exports = router

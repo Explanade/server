@@ -22,14 +22,8 @@ const userSchema = new Schema({
         required: [true, "Please enter your password"]
     },
     profile_picture: String,
-    // reviews: [{
-    //     user_id: String,
-    //     itineraries_id: String,
-    //     images: [String],
-    //     score: String,
-    //     message: String
-    // }]
 }, { versionKey: false })
+
 
 userSchema.pre('save', function (next) {
     this.password = hash(this.password)

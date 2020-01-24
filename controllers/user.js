@@ -2,15 +2,14 @@ const User = require('../models/user'),
     { compare } = require('../helpers/bcrypt'),
     { generateToken } = require('../helpers/jwt'),
     { OAuth2Client } = require('google-auth-library'),
-    mailer = require("../helpers/nodemailer"),
     toUpdate = require('../helpers/updateField'),
     removeGCS = require('../helpers/removeGCS');
+
 
 class UserController {
 
     static register(req, res, next) {
         let { name, email, password } = req.body
-        // console.log(req.body)
         let profile_picture = ''
         if (req.file) {
             profile_picture = req.file.cloudStoragePublicUrl
@@ -27,17 +26,15 @@ class UserController {
     static updateProfile(req, res, next) {
         let id = req.loggedUser.id
         let dataChanged = toUpdate(["name", "email"], req.body)
-        // console.log(req.body, req.file)
         if (req.file) {
             dataChanged.profile_picture = req.file.cloudStoragePublicUrl
             User.findById(id)
                 .then(user => {
-                    console.log(user)
                     removeGCS(user.profile_picture)
                     return User.updateOne({ _id: id }, dataChanged, { new: true })
                 })
                 .then(updated => {
-                    res.status(201).json({ updated, message: 'success update profile' })
+                    res.status(200).json({ updated, message: 'success update profile' })
                 })
                 .catch(next)
         } else {
@@ -48,24 +45,21 @@ class UserController {
                     return User.updateOne({ _id: id }, dataChanged, { new: true })
                 })
                 .then(updated => {
-                    res.status(200).json(updated)
+                    res.status(200).json({ updated, message: 'success update profile' })
                 })
                 .catch(next)
-
         }
     }
 
     static login(req, res, next) {
-        // console.log(req.body);
+
         let { email, password } = req.body
-        // console.log(req.body)
         User.findOne({
             email: email
         })
             .then(foundUser => {
-                console.log(foundUser)
                 if (!foundUser) {
-                    next({ status: 403, message: 'Invalid password or email' })
+                    next({ status: 400, message: 'Invalid password or email' })
                 } else {
 
                     let authPass = compare(password, foundUser.password)
@@ -75,11 +69,10 @@ class UserController {
                             email: foundUser.email,
                             id: foundUser._id
                         }
-
                         const token = generateToken(user)
                         res.status(200).json({ token, user })
                     } else {
-                        next({ status: 403, message: 'Invalid password or email' })
+                        next({ status: 400, message: 'Invalid password or email' })
                     }
                 }
             })
@@ -96,7 +89,6 @@ class UserController {
         })
             .then(ticket => {
                 googlePayload = ticket.getPayload()
-                // console.log(googlePayload)
                 return User.findOne({
                     email: googlePayload.email
                 })
@@ -121,6 +113,7 @@ class UserController {
                 },
                     token = generateToken(user)
                 res.status(200).json({ token, user })
+
             })
             .catch(next)
     }
@@ -146,7 +139,6 @@ class UserController {
     static findOne(req, res, next) {
         let id = req.loggedUser.id
         User.findById(id)
-            .populate({ path: 'users', match: { draft: false } })
             .then(user => {
                 res.status(200).json(user)
             })
@@ -159,12 +151,6 @@ class UserController {
                 res.status(200).json(userdeleted)
             })
             .catch(next)
-    }
-
-    static subscribe(req, res, next) {
-        let email = req.loggedUser.email,
-            name = req.loggedUser.name;
-        return mailer(email, name)
     }
 }
 

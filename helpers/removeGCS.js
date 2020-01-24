@@ -7,7 +7,7 @@ const storage = new Storage({
   keyFilename: process.env.KEYFILE_PATH
 })
 
-async function deleteFileFromGCS(url) {
+async function deleteFileFromGCS(url, next) {
   if (!url) return
   let filename = url.split('/').pop()
   try {
@@ -16,7 +16,7 @@ async function deleteFileFromGCS(url) {
       .file(filename)
       .delete()
   } catch (err) {
-    throw err
+    next(err)
   }
 }
 
