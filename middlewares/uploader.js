@@ -10,7 +10,7 @@ const bucket = storage.bucket(CLOUD_BUCKET)
 const getPublicUrl = (filename) => {
   return `https://storage.googleapis.com/${CLOUD_BUCKET}/${filename}`
 }
-const sendUploadToGCS = (req, res, next) => {
+const sendUploadToGCS = async (req, res, next) => {
   if (!req.file) {
     return next()
   }
@@ -22,6 +22,7 @@ const sendUploadToGCS = (req, res, next) => {
     }
   })
   stream.on('error', (err) => {
+    console.log('This is the invalid field ->', err)
     req.file.cloudStorageError = err
     next(err)
   })
@@ -38,7 +39,7 @@ const Multer = require('multer'),
   multer = Multer({
     storage: Multer.MemoryStorage,
     limits: {
-      fileSize: 5 * 1024 * 1024
+      fileSize: 5 * 2024 * 2024
     }
   })
 module.exports = {
