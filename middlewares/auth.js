@@ -1,6 +1,7 @@
 const { decodeToken } = require('../helpers/jwt')
 const User = require('../models/user')
-
+const Itinerary = require('../models/itinerary')
+const Activity = require('../models/activity')
 
 const authentication = async (req, res, next) => {
   try {
@@ -16,24 +17,43 @@ const authentication = async (req, res, next) => {
   }
 }
 
-// const authorization = async (req, res, next) => {
-//   try {
-//     let user_id = req.loggedUser.id
-//     let { id } = req.params
-//     let findItinerary = await Itinerary.findOne({ _id: id }, { user_id })
-//     if (findItinerary) {
-//       next()
-//     } else {
-//       next({ status: 403, message: 'You are not authorized to perform this action' })
-//     }
-//   } catch (error) {
-//     next(error)
-//   }
+const authorization = async (req, res, next) => {
+  try {
+    let user_id = req.loggedUser.id
+    let { id } = req.params
+    let findItinerary = await Itinerary.findOne({ _id: id })
+    if (findItinerary) {
+      if(findItinerary.user_id == user_id) {
+        next()
+      } else {
+        next({ status: 403, message: 'You are not authorized to perform this action' })
+      }
+    } else {
+      next({ status: 404, message: 'Itinerary not found' })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
 
-// }
+const activityAuthorization = async (req, res, next) => {
+  try {
+    let user_id = req.loggedUser.id
+    let { id } = req.params
+    let findActivity = await Activity.findOne({ _id: id })
+    if (findActivity) {
+      next()
+    } else {
+      next({ status: 403, message: 'You are not authorized to perform this action' })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
 
 module.exports = {
   authentication,
-  // authorization
+  authorization,
+  activityAuthorization
 }
 

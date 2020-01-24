@@ -13,19 +13,24 @@ class ItineraryController {
       end,
       total_days
     }
-    Itinerary.create({ name, location, date, user_id })
-      .then(result => {
-        res.status(201).json(result)
-      })
-      .catch(next)
+    if(!name || !location || !start_date || !end_date) {
+      res.status(400).json({ message: 'bad request' })
+    } else {
+      Itinerary.create({ name, location, date, user_id })
+        .then(result => {
+          res.status(201).json(result)
+        })
+        .catch(next)
+    }
   }
 
   static getOneItinerary(req, res, next) {
     let itinerary_id = req.params.id
     Itinerary.findOne({ _id: itinerary_id })
-      .populate('activities.activity_id')
+      .populate('activities')
       .then(itinerary => {
-        res.status(200).json(itinerary)
+        if(itinerary) res.status(200).json(itinerary)
+        else next({ message: 'itinerary not found', status: 404 })
       })
       .catch(next)
   }
@@ -71,9 +76,12 @@ class ItineraryController {
 
   static deleteItinerary(req, res, next) {
     let itinerary_id = req.params.id
-    Itinerary.deleteOne({ _id: itinerary_id })
-      .then(result => {
-        res.status(200).json(result)
+    Itinerary.findById(itinerary_id)
+      .then(itinerary => {
+        return Itinerary.findByIdAndDelete({ _id: itinerary._id })
+      })
+      .then(_ => {
+        res.status(204).json({ message: 'itinerary deleted successfuly' })
       })
       .catch(next)
   }
