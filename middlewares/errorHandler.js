@@ -1,7 +1,7 @@
 module.exports = {
     errorHandler: function (err, req, res, next) {
         if (process.env.NODE_ENV === "development") {
-            // console.log(err);
+            console.log(err);
         }
         if (err.message.name === "CastError") {
             let message = 'id not found'
