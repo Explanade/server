@@ -8,7 +8,8 @@ const { generateToken } = require('../helpers/jwt')
 chai.use(chaiHttp)
 const expect = chai.expect
 
-let token = ''
+let userToken = ''
+let dummyItinerary = ''
 
 let user = {
   name: 'dummy user',
@@ -27,15 +28,36 @@ let itineraryData = {
   end_date: '01/22/2020'
 }
 
+let itineraryDummyData = {
+  name: 'My Dummy Trip',
+  location: {
+    name: "Bandung",
+		lat: -6.903429,
+		lng: 107.5030708
+  },
+  start_date: '02/20/2020',
+  end_date: '02/22/2020'
+}
+
 before(function(done) {
   // generate Token
   User.create(user)
     .then(user => {
-      token = generateToken({
+      userToken = generateToken({
         _id: user._id,
         name: user.name,
         email: user.email
       })
+      done()
+    })
+    .catch(console.log)
+})
+
+before(function(done) {
+  // generate dummy itinerary
+  Itinerary.create(itineraryDummyData)
+    .then(itinerary => {
+      dummyItinerary = itinerary
       done()
     })
     .catch(console.log)
@@ -46,6 +68,10 @@ after(function(done) {
     User.deleteMany({})
       .then(_ => {
         console.log('testing: delete data user success!')
+        return Itinerary.deleteMany({})
+      })
+      .then(_ => {
+        console.log('testing: delete data itinerary success!')
         done()
       })
       .catch(console.log)
@@ -53,12 +79,12 @@ after(function(done) {
 })
 
 describe('CRUD Itinerary Enpoints', function() {
-  describe('Create an Itinerary', () => {
+  describe('POST /itineraries', () => {
     describe('success process', () => {
       it('should return an object (data) with status code 201', (done) => {
         chai.request(app)
         .post('/itineraries')
-        .set('token', token)
+        .set('token', userToken)
         .set('Content-Type', 'application/json')
         .send(itineraryData)
         .end(function(err, res) {
@@ -83,7 +109,20 @@ describe('CRUD Itinerary Enpoints', function() {
         })
       })
     })
-    
+  })
+  describe('GET /itineraries', () => {
+    describe('success process', () => {
+      it('should send an array of object with status code 200', (done) => {
+        chai.request(app)
+        .get('/itineraries')
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('array')
+          done()
+        })
+      })
+    })
   })
   
 })

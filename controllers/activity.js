@@ -4,7 +4,7 @@ const Itinerary = require('../models/itinerary')
 class ActivityController {
   static create(req, res, next) {
     let { itinerary_id, date, places } = req.body
-    Activity.create({ itinerary_id, date, places })
+    Activity.create({ date, places })
       .then(activity => {
         console.log(activity)
         return Itinerary.updateOne({ _id: itinerary_id }, { $push: { activities: activity._id } })

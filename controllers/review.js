@@ -4,8 +4,9 @@ const gcsDelete = require('../helpers/removeGCS')
 
 class ReviewController {
   static create(req, res, next) {
-    let { score, message, image, itinerary_id, user_id } = req.body
-    if(!score || !message || !image || !itinerary_id || ! user_id) {
+    let { score, message, image, itinerary_id } = req.body
+    let user_id = req.loggedUser.id
+    if(!score || !message || !image || !itinerary_id ) {
       res.status(400).json({ message: 'bad request' })
     } else {
       Review.create({ score, message, image, itinerary_id, user_id })

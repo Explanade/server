@@ -1,4 +1,5 @@
 const Itinerary = require('../models/itinerary')
+const Activity = require('../models/activity')
 
 class ItineraryController {
   static create(req, res, next) {
@@ -12,9 +13,7 @@ class ItineraryController {
       end,
       total_days
     }
-    let activities = []
-    let reviews = []
-    Itinerary.create({ name, location, date, user_id, activities, reviews })
+    Itinerary.create({ name, location, date, user_id })
       .then(result => {
         res.status(201).json(result)
       })
@@ -33,7 +32,7 @@ class ItineraryController {
 
   static getItineraries(req, res, next) {
     Itinerary.find()
-      .populate('activities.activity_id')
+      .populate('activities')
       .then(itineraries => {
         res.status(200).json(itineraries)
       })

@@ -18,18 +18,14 @@ const itinerarySchema = new Schema({
   },
   activities: [
     {
-      activity_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Activity'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'Activity'
     }
   ],
   reviews: [
     {
-      review_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Review'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'Review'
     }
   ]
 })
