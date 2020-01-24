@@ -1,13 +1,11 @@
 const router = require('express').Router()
 const ActivityController = require('../controllers/activity')
-const { authentication, authorization } = require('../middlewares/auth')
+const { authentication, activityAuthorization } = require('../middlewares/auth')
 
-router.use(authentication)
-router.post('/', ActivityController.create)
-router.get('/', ActivityController.getAllItinerarysActivity)
+router.get('/', ActivityController.getAll)
 router.get('/:id', ActivityController.getOneActivity)
-router.use(authorization)
-router.put('/:id', ActivityController.updateActivity)
-router.delete('/:id', ActivityController.deleteActivity)
+router.post('/', authentication, ActivityController.create)
+router.put('/:id', activityAuthorization, ActivityController.updateActivity)
+router.delete('/:id', authentication, activityAuthorization, ActivityController.deleteActivity)
 
 module.exports = router

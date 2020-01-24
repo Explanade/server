@@ -1,7 +1,10 @@
 const { Schema, model } = require('mongoose')
 
 const itinerarySchema = new Schema({
-  name: String,
+  name: {
+    type: String,
+    required: [true, 'please input your itinerary\'s name']
+  },
   location: {
     name: String,
     lat: Number,
