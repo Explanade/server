@@ -12,6 +12,10 @@ const itinerarySchema = new Schema({
     end: Date,
     total_days: Number
   },
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
   activities: [
     {
       activity_id: {

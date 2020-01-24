@@ -9,7 +9,6 @@ const User = require('../models/user'),
 class UserController {
 
     static register(req, res, next) {
-        console.log('masuk')
         let { name, email, password } = req.body
         // console.log(req.body)
         let profile_picture = ''

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const db = process.env.URL_DB + '-' + process.env.NODE_ENV
-console.log(process.env.MONGO_ATLAS)
-console.log(db)
+// console.log(process.env.MONGO_ATLAS)
+// console.log(db)
 // const db = process.env.MONGO_ATLAS + '-' + process.env.NODE_ENV
 
 mongoose.connect(db, {
