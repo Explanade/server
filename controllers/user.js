@@ -2,12 +2,16 @@ const User = require('../models/user'),
     { compare } = require('../helpers/bcrypt'),
     { generateToken } = require('../helpers/jwt'),
     { OAuth2Client } = require('google-auth-library'),
-    mailer = require("../helpers/nodemailer")
+    mailer = require("../helpers/nodemailer"),
+    toUpdate = require('../helpers/updateField')
 
 class UserController {
 
     static register(req, res, next) {
+        console.log('masuk')
         let { name, email, password } = req.body
+        console.log(req.body)
+        let profile_picture = ''
         if (req.file) {
             profile_picture = req.file.cloudStoragePublicUrl
         } else {
@@ -23,6 +27,7 @@ class UserController {
     static updateProfile(req, res, next) {
         let id = req.loggedUser.id
         let dataChanged = toUpdate(["name", "email"], req.body)
+        console.log(req.file)
         if (req.file) {
             dataChanged.profile_picture = req.file.cloudStoragePublicUrl
             User.findById(id)
@@ -31,7 +36,7 @@ class UserController {
                     return User.updateOne({ _id: id }, dataChanged)
                 })
                 .then(user => {
-                    res.status(201).json({ user, message: 'success updated profile' })
+                    res.status(201).json({ user, message: 'success update profile' })
                 })
                 .catch(next)
         } else {
@@ -103,7 +108,7 @@ class UserController {
                         name: googlePayload.name,
                         email: googlePayload.email,
                         password: process.env.PASSWORD_USER,
-                        profile_picture = googlePayload.picture
+                        profile_picture: googlePayload.picture
                     })
                 }
             })
@@ -122,7 +127,7 @@ class UserController {
             .catch(next)
     }
 
-    static myItineraries(req, res, next) {
+    static myItinerary(req, res, next) {
         let author = req.loggedUser.id
         User.findOne({ _id: author }, 'itineraries')
             .populate('itineraries')
