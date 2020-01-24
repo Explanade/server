@@ -1,8 +1,16 @@
 const { Schema, model } = require('mongoose')
 
 const reviewSchema = new Schema({
-  score: Number,
-  message: String,
+  score: {
+    type: Number,
+    min: 1,
+    max: 10,
+    default: 0
+  },
+  message: {
+    type: String,
+    required: [true, 'Please enter your message']
+  },
   images: [String],
   user_id: {
     type: Schema.Types.ObjectId,
