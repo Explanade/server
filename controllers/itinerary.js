@@ -27,7 +27,7 @@ class ItineraryController {
   static getOneItinerary(req, res, next) {
     let itinerary_id = req.params.id
     Itinerary.findOne({ _id: itinerary_id })
-      .populate('activities')
+      // .populate('activities')
       .then(itinerary => {
         if(itinerary) res.status(200).json(itinerary)
         else next({ message: 'itinerary not found', status: 404 })
@@ -37,11 +37,22 @@ class ItineraryController {
 
   static getItineraries(req, res, next) {
     Itinerary.find()
-      .populate('activities')
+      // .populate('activities')
       .then(itineraries => {
         res.status(200).json(itineraries)
       })
       .catch(next)
+  }
+
+  static updateItinerary(req, res, next) {
+    const { itinerary } = req.body;
+    Itinerary.findOneAndUpdate({_id: req.params.id}, itinerary, {
+      returnOriginal: false
+    })
+    .then(data => {
+      res.status(200).json(data)
+    })
+    .catch(next)
   }
 
   // static addActivity(req, res, next) {
