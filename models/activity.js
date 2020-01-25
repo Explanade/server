@@ -1,6 +1,10 @@
 const { Schema, model } = require('mongoose')
 
 const activitySchema = new Schema({
+  itinerary_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Itinerary'
+  },
   date: Date,
   places: [
     {
