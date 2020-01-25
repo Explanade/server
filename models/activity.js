@@ -8,7 +8,10 @@ const activitySchema = new Schema({
   date: Date,
   places: [
     {
-      status: false,
+      status: {
+        type: Boolean,
+        default: false
+      },
       order: Number,
       formatted_address: String,
       lat: Number,
