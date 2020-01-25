@@ -4,6 +4,7 @@ const activitySchema = new Schema({
   date: Date,
   places: [
     {
+      status: false,
       order: Number,
       formatted_address: String,
       lat: Number,
