@@ -44,6 +44,17 @@ class ItineraryController {
       .catch(next)
   }
 
+  static getUsersItineraries(req, res, next) {
+    console.log('masukkkkkkkkkkkkk$$$$$$$$$$$$$$$$$$$$$$$$$')
+    const user_id = req.loggedUser.id
+    Itinerary.find({ user_id })
+      .populate('activities')
+      .then(itineraries => {
+        res.status(200).json(itineraries)
+      })
+      .catch(next)
+  }
+
   // static addActivity(req, res, next) {
   //   let itinerary_id = req.params.id
   //   let { activity_id } = req.body
