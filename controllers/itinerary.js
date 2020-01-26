@@ -27,7 +27,7 @@ class ItineraryController {
   static getOneItinerary(req, res, next) {
     let itinerary_id = req.params.id
     Itinerary.findOne({ _id: itinerary_id })
-      // .populate('activities')
+      .populate('activities')
       .then(itinerary => {
         if(itinerary) res.status(200).json(itinerary)
         else next({ message: 'itinerary not found', status: 404 })
@@ -37,7 +37,7 @@ class ItineraryController {
 
   static getItineraries(req, res, next) {
     Itinerary.find()
-      // .populate('activities')
+      .populate('activities')
       .then(itineraries => {
         res.status(200).json(itineraries)
       })
@@ -46,13 +46,60 @@ class ItineraryController {
 
   static updateItinerary(req, res, next) {
     const { itinerary } = req.body;
-    Itinerary.findOneAndUpdate({_id: req.params.id}, itinerary, {
-      returnOriginal: false
-    })
-    .then(data => {
-      res.status(200).json(data)
-    })
-    .catch(next)
+    const activities = itinerary.activities;
+    const keys = Object.keys(activities)
+    let counter = 0;
+    let createdActivitiesId = [];
+
+    Itinerary.findById({ _id: itinerary._id })
+      .then(data => {
+        if (data.activities.length <= 0) {
+          let promises = keys.map(activity => {
+            let date = new Date(itinerary.date.start);
+            date.setDate(date.getDate() + counter)
+            
+            counter++;
+            return Activity.create({
+              itineraryId: itinerary._id,
+              orderIndex: counter - 1,
+              places: activities[counter - 1],
+              date
+            })
+            .then(data => {
+              createdActivitiesId.push(data._id)
+            })
+            .catch(next)
+      
+          })
+      
+          Promise.all(promises)
+            .then(data => {
+              return Itinerary.findOneAndUpdate({ _id: itinerary._id }, { activities: createdActivitiesId },{
+                returnOriginal: false
+              })
+            })
+            .then(data => {
+              res.status(200).json(data)
+            })
+            .catch(next)
+        } else {
+          let promises = keys.map(activity => {
+            counter++
+            return Activity.findOneAndUpdate({ itineraryId: itinerary._id, orderIndex: counter - 1 },{
+              places: activities[counter - 1]
+            })
+          })
+
+          Promise.all(promises)
+            .then(data => {
+              return Itinerary.findOne({ _id: itinerary._id })
+            })
+            .then(data => {
+              res.status(200).json(data)
+            })
+        }
+      })
+      .catch(next)
   }
 
   // static addActivity(req, res, next) {
