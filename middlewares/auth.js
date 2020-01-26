@@ -7,6 +7,7 @@ const Review = require('../models/review')
 const authentication = async (req, res, next) => {
   try {
     req.loggedUser = decodeToken(req.headers.token)
+    console.log('masuk auth==================================', req.loggedUser)
     const user = await User.findOne({
       email: req.loggedUser.email
     })
