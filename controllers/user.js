@@ -17,12 +17,14 @@ class UserController {
             profile_picture = `https://ui-avatars.com/api/?name=${name}&rounded=true`
         }
         User.create({ name, email, password, profile_picture })
-            .then(user => {
+            .then(createdUser => {
                 let payload = {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email
+                    id: createdUser._id,
+                    name: createdUser.name,
+                    email: createdUser.email,
+                    profile_picture: createdUser.profile_picture
                 }
+                let user = payload
                 let token = generateToken(payload)
                 res.status(201).json({ token, user })
             })
@@ -73,7 +75,8 @@ class UserController {
                         let user = {
                             name: foundUser.name,
                             email: foundUser.email,
-                            id: foundUser._id
+                            id: String(foundUser._id),
+                            profile_picture: foundUser.profile_picture
                         }
                         const token = generateToken(user)
                         res.status(200).json({ token, user })

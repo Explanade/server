@@ -8,7 +8,7 @@ class ActivityController {
     if(!itinerary_id || !date || !places) {
       res.status(400).json({ message: 'bad request' })
     } else {
-      Activity.create({ date, places })
+      Activity.create({ itinerary_id, date, places })
         .then(activity => {
           newActivity = activity
           return Itinerary.updateOne({ _id: itinerary_id }, { $push: { activities: activity._id } })
@@ -44,10 +44,10 @@ class ActivityController {
 
   static updateActivity(req, res, next) {
     let activity_id = req.params.id
-    let { places } = req.body
-
-    Activity.findByIdAndUpdate({ _id: activity_id }, { $set: { places } }, { omitUndefined: true, new: true })
-      .then(result => {
+    let { place_id, status } = req.body
+    Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } })  
+    .then(result => {
+        console.log(result)
         res.status(200).json(result)
       })
       .catch(next)
