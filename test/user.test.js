@@ -90,7 +90,7 @@ describe('USER ENDPOINTS', function () {
                     .end((err, res) => {
                         expect(err).to.be.null
                         expect(res).to.have.status(201)
-                        expect(res.body).to.be.an('Object').to.have.all.keys('_id', 'name', 'email', 'password', 'profile_picture')
+                        expect(res.body).to.be.an('Object').to.have.all.keys('token', 'user')
                         expect(res.body.password).to.be.not.equal(newUser.password)
                         done()
                     })

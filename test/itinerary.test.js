@@ -219,6 +219,43 @@ describe('CRD Itinerary Endpoints', function() {
       })
     })
   })
+  describe('GET /itineraries/my-itineraries', () => {
+    describe('success process', () => {
+      it('should send an array of object with status code 200', (done) => {
+        chai.request(app)
+        .get('/itineraries/my-itineraries')
+        .set('token', userToken)
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('array')
+          done()
+        })
+      })
+    })
+    describe('error process', () => {
+      it('should send a status code 401 cause of missing token', (done) => {
+        chai.request(app)
+        .get('/itineraries/my-itineraries')
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body.message[0]).to.equal("you have to login first")
+          done()
+        })
+      })
+      it('should send a status code 404 cause of wrong endpoint', (done) => {
+        chai.request(app)
+        .get('/itineraries/my-itinerary')
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+    })
+  })
   describe('DELETE /itineraries/:id', () => {
     describe('error process', () => {
       it('should send an object with message You are not authorized to perform this action and status code 403 because of invalid token', (done) => {

@@ -45,7 +45,6 @@ class ItineraryController {
   }
 
   static getUsersItineraries(req, res, next) {
-    console.log('masukkkkkkkkkkkkk$$$$$$$$$$$$$$$$$$$$$$$$$')
     const user_id = req.loggedUser.id
     Itinerary.find({ user_id })
       .populate('activities')
