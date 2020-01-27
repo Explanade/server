@@ -11,6 +11,7 @@ const expect = chai.expect
 
 let userToken = ''
 let userToken2 = ''
+let invalidToken = ''
 let dummyItinerary = ''
 let dummyActivity = ''
 let invalidActivityId = '5e2b53762ea565333eb570a5'
@@ -25,6 +26,12 @@ let secondUser = {
   email: 'dummyuseractivity2@mail.com',
   password: 'useractivity321',
 }
+let thirdUser = {
+  name: 'dummy user activity 3',
+  email: 'dummyuseractivity3@mail.com',
+  password: 'useractivity321',
+}
+
 
 let itineraryData = {
   name: 'My Awesome Trip',
@@ -109,6 +116,17 @@ before(function(done) {
         name: user2.name,
         email: user2.email
       })
+      return User.create(thirdUser)
+    })
+    .then(user3 => {
+      invalidToken = generateToken({
+        id: user3._id,
+        name: user3.name,
+        email: user3.email
+      })
+      return User.deleteOne({ _id: user3._id })
+    })
+    .then(_ => {
       done()
     })
     .catch(console.log)
@@ -214,6 +232,20 @@ describe('CRUD Activity Endpoints', () => {
           done()
         })
       })
+      it('should send a status code 401 cause of invalid token', (done) => {
+        chai.request(app)
+        .post('/activities')
+        .set('token', invalidToken)
+        .set('Content-Type', 'application/json')
+        .send(activityData)
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object').to.have.any.keys("message")
+          expect(res.body.message).to.equal("Authentication Failed")
+          done()
+        })
+      })
     })
   })
   describe('GET /activities', () => {
@@ -272,13 +304,26 @@ describe('CRUD Activity Endpoints', () => {
   })
   describe('DELETE /activities/:id', () => {
     describe('error process', () => {
-      it('should send status code 403', (done) => {
+      it('should send status code 403 cause of invalid id', (done) => {
         chai.request(app)
         .delete('/activities/' + invalidActivityId)
         .set('token', userToken)
         .end((err, res) => {
           expect(err).to.be.null
           expect(res).to.have.status(403)
+          done()
+        })
+      })
+      it('should send a status code 401 cause of invalid token', (done) => {
+        chai.request(app)
+        .delete('/activities/' + dummyActivity.activity._id)
+        .set('token', invalidToken)
+        .set('Content-Type', 'application/json')
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object').to.have.any.keys("message")
+          expect(res.body.message).to.equal("Authentication Failed")
           done()
         })
       })

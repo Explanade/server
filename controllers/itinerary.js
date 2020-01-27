@@ -98,29 +98,17 @@ class ItineraryController {
               res.status(200).json(data)
             })
         }
+
+  static getUsersItineraries(req, res, next) {
+    console.log('masukkkkkkkkkkkkk$$$$$$$$$$$$$$$$$$$$$$$$$')
+    const user_id = req.loggedUser.id
+    Itinerary.find({ user_id })
+      .populate('activities')
+      .then(itineraries => {
+        res.status(200).json(itineraries)
       })
       .catch(next)
   }
-
-  // static addActivity(req, res, next) {
-  //   let itinerary_id = req.params.id
-  //   let { activity_id } = req.body
-  //   Itinerary.updateOne({ _id: itinerary_id }, { $push: { activities: activity_id } })
-  //     .then(result => {
-  //       res.status(200).json(result)
-  //     })
-  //     .catch(next)
-  // }
-
-  // static removeActivity(req, res, next) {
-  //   let itinerary_id = req.params.id
-  //   let { activity_id } = req.body
-  //   Itinerary.updateOne({ _id: itinerary_id }, { $pull: { activities: activity_id } })
-  //     .then(result => {
-  //       res.status(200).json(result)
-  //     })
-  //     .catch(next)
-  // }
 
   // static writeReview(req, res, next) {
   //   let itinerary_id = req.params.id

@@ -18,7 +18,13 @@ class UserController {
         }
         User.create({ name, email, password, profile_picture })
             .then(user => {
-                res.status(201).json(user)
+                let payload = {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+                let token = generateToken(payload)
+                res.status(201).json({ token, user })
             })
             .catch(next)
     }
