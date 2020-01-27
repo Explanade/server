@@ -12,7 +12,6 @@ class GoogleController {
             key: process.env.GOOGLE_KEY
           }
         })
-        console.log(data)
         if(data.error_message) {
           throw({ status: 400, message: 'bad request' })
         } else if (data) {
