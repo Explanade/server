@@ -7,7 +7,6 @@ const Review = require('../models/review')
 const authentication = async (req, res, next) => {
   try {
     req.loggedUser = decodeToken(req.headers.token)
-    console.log('masuk auth==================================', req.loggedUser)
     const user = await User.findOne({
       email: req.loggedUser.email
     })
@@ -31,7 +30,7 @@ const authorization = async (req, res, next) => {
         next({ status: 403, message: 'You are not authorized to perform this action' })
       }
     } else {
-      next({ status: 404, message: 'Itinerary not found' })
+      throw ({ status: 404, message: 'Itinerary not found' })
     }
   } catch (error) {
     next(error)
@@ -40,13 +39,12 @@ const authorization = async (req, res, next) => {
 
 const activityAuthorization = async (req, res, next) => {
   try {
-    let user_id = req.loggedUser.id
     let { id } = req.params
     let findActivity = await Activity.findOne({ _id: id })
     if (findActivity) {
       next()
     } else {
-      next({ status: 403, message: 'You are not authorized to perform this action' })
+      throw({ status: 403, message: 'You are not authorized to perform this action' })
     }
   } catch (error) {
     next(error)
@@ -65,7 +63,7 @@ const reviewAuthorization = async (req, res, next) => {
         next({ status: 403, message: 'You are not authorized to perform this action' })
       }
     } else {
-      next({ status: 404, message: 'Review not found' })
+      throw({ status: 404, message: 'Review not found' })
     }
   } catch (error) {
     next(error)

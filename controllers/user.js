@@ -75,7 +75,7 @@ class UserController {
                         let user = {
                             name: foundUser.name,
                             email: foundUser.email,
-                            id: foundUser._id,
+                            id: String(foundUser._id),
                             profile_picture: foundUser.profile_picture
                         }
                         const token = generateToken(user)

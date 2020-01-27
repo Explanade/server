@@ -1,6 +1,5 @@
 const { googlePlaces, googlePhotos } = require('../config/googlePlaces');
 
-
 class GoogleController {
   static async getPlaces(req, res, next) {
       const { query } = req.query;
@@ -13,8 +12,10 @@ class GoogleController {
             key: process.env.GOOGLE_KEY
           }
         })
-
-        if (data) {
+        console.log(data)
+        if(data.error_message) {
+          throw({ status: 400, message: 'bad request' })
+        } else if (data) {
           for (let i = 0; i < data.results.length; i++) {
             const photo = await googlePhotos({
               params: {
@@ -26,9 +27,8 @@ class GoogleController {
             data.results[i].photo = 'https://lh3.googleusercontent.com/' + photo.request.path;
             console.log(data.results[i].photo)
           }
+          res.status(200).json(data)
         }
-
-        res.status(200).json(data)
       } catch(e) {
         next(e)
       }

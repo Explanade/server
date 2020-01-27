@@ -5,8 +5,8 @@ const { authentication, reviewAuthorization } = require('../middlewares/auth')
 
 router.get('/', ReviewController.getAll)
 router.get('/:id', ReviewController.getOne)
-router.post('/', authentication, gcsUpload.array('image'), ReviewController.create)
-router.put('/:id', authentication, reviewAuthorization, gcsUpload.array('image'), ReviewController.update)
+router.post('/', authentication, gcsUpload.array('images'), ReviewController.create)
+router.put('/:id', authentication, reviewAuthorization, gcsUpload.array('images'), ReviewController.update)
 router.delete('/:id', authentication, reviewAuthorization, ReviewController.delete)
 
 module.exports = router

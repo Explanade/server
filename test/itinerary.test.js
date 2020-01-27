@@ -268,6 +268,18 @@ describe('CRD Itinerary Endpoints', function() {
           done()
         })
       })
+      it('should send status code 404 and error message Itinerary not found cause of invalid itinerary id', (done) => {
+        chai.request(app)
+        .delete('/itineraries/' + invalidItineraryId)
+        .set('token', userToken)
+        .end((err, res) => {
+          expect(err).to.be.null
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.an('object').to.have.any.keys('message')
+          expect(res.body.message).to.equal('Itinerary not found')
+          done()
+        })
+      })
     })
     describe('success process', () => {
       it('should send status code 204', (done) => {

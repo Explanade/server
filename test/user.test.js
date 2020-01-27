@@ -189,7 +189,7 @@ describe('USER ENDPOINTS', function () {
                         expect(err).to.be.null
                         expect(res).to.have.status(200)
                         expect(res.body).to.be.an('Object').to.have.all.keys('token', 'user')
-                        expect(res.body.user).to.be.an('Object').to.have.all.keys('id', 'name', 'email')
+                        expect(res.body.user).to.be.an('Object').to.have.all.keys('id', 'name', 'email', 'profile_picture')
                         done()
                     })
             })

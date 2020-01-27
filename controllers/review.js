@@ -1,16 +1,16 @@
 const Review = require('../models/review')
 const Itinerary = require('../models/itinerary')
 const gcsDelete = require('../helpers/removeGCS')
-
+console.log(Itinerary)
 class ReviewController {
   static create(req, res, next) {
     let newReview = ''
-    let { score, message, image, itinerary_id } = req.body
+    let { score, message, images, itinerary_id } = req.body
     let user_id = req.loggedUser.id
     if(!score || !message || !itinerary_id ) {
       res.status(400).json({ message: 'bad request' })
     } else {
-      Review.create({ score, message, image, itinerary_id, user_id })
+      Review.create({ score, message, images, itinerary_id, user_id })
         .then(review => {
           newReview = review
           return Itinerary.updateOne({ _id: itinerary_id }, { $push: { reviews: review._id } })
@@ -45,9 +45,11 @@ class ReviewController {
 
   static update(req, res, next) {
     let review_id = req.params.id
-    let { score, message, image, itinerary_id, user_id, removedImages } = req.body
+    let { score, message, images, itinerary_id, user_id, removedImages } = req.body
+    console.log(req.body)
     Review.findById({ _id: review_id })
       .then(review => {
+        console.log(review, 'ADAAAAAAA REVIEW DOT IMAGESSSSSSSSSSSSSSSSSSSSSSSSS')
         // if(review) {
           let notDeletedImages = []
           review.images.forEach(oldImage => {
@@ -55,7 +57,7 @@ class ReviewController {
               notDeletedImages.push(oldImage)
             }
           })
-          image.forEach(newImage => {
+          images.forEach(newImage => {
             notDeletedImages.push(newImage)
           })
 

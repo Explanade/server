@@ -7,6 +7,7 @@ const Review = require('../models/review')
 const { generateToken } = require('../helpers/jwt')
 const fs = require('fs');
 
+
 chai.use(chaiHttp)
 const expect = chai.expect
 
@@ -39,8 +40,8 @@ let itineraryData = {
   name: 'My Awesome Trip',
   location: {
     name: "Bandung",
-		lat: -6.903429,
-		lng: 107.5030708
+    lat: -6.903429,
+    lng: 107.5030708
   },
   date: {
     start: '2020-01-19T17:00:00.000Z',
@@ -52,11 +53,10 @@ let itineraryData = {
 let reviewData = {
   score: 8,
   message: 'Great and well planned trip! 5 star.',
-  images: ['dummy1.jpg', 'dummy2.jpg'],
   itinerary_id: ''
 }
 
-before(function(done) {
+before(function (done) {
   // generate Token
   User.create(user)
     .then(user => {
@@ -70,8 +70,7 @@ before(function(done) {
       return Itinerary.create(dummyItineraryData)
     })
     .then(itinerary => {
-      dummyItinerary = itinerary
-      reviewData.itinerary_id = dummyItinerary._id
+      reviewData.itinerary_id = itinerary.id
       return User.create(secondUser)
     })
     .then(user2 => {
@@ -120,96 +119,104 @@ describe('CRUD Review Endpoints', () => {
   describe('POST /reviews', () => {
     describe('success process', () => {
       it('should return an object (data) with status code 201', (done) => {
+        console.log(reviewData.itinerary_id)
         chai.request(app)
-        .post('/reviews')
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .send(reviewData)
-        .end(function(err, res) {
-          dummyReview = res.body
-          expect(err).to.be.null
-          expect(res).to.have.status(201)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal("review created")
-          done()
-        })
+          .post('/reviews')
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', reviewData.score)
+          .field('message', reviewData.message)
+          .field('itinerary_id', reviewData.itinerary_id)
+          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
+          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
+          .end(function (err, res) {
+            dummyReview = res.body
+            expect(err).to.be.null
+            expect(res).to.have.status(201)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal("review created")
+            done()
+          })
       })
     })
     describe('error process', () => {
       it('should send a status code 400 cause of missing score', (done) => {
-        const withoutScore = { ...reviewData }
-        delete withoutScore.score
         chai.request(app)
-        .post('/reviews')
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .send(withoutScore)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(400)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal("bad request")
-          done()
-        })
+          .post('/reviews')
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('message', reviewData.message)
+          .field('itinerary_id', reviewData.itinerary_id)
+          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
+          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(400)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal("bad request")
+            done()
+          })
       })
       it('should send a status code 400 cause of missing message', (done) => {
-        const withoutMessage = { ...reviewData }
-        delete withoutMessage.message
         chai.request(app)
-        .post('/reviews')
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .send(withoutMessage)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(400)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal("bad request")
-          done()
-        })
+          .post('/reviews')
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', reviewData.score)
+          .field('itinerary_id', reviewData.itinerary_id)
+          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
+          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(400)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal("bad request")
+            done()
+          })
       })
       it('should send a status code 400 cause of missing itinerary\'s id', (done) => {
-        const withoutItineraryId = { ...reviewData }
-        delete withoutItineraryId.itinerary_id
         chai.request(app)
-        .post('/reviews')
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .send(withoutItineraryId)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(400)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal("bad request")
-          done()
-        })
+          .post('/reviews')
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', reviewData.score)
+          .field('message', reviewData.message)
+          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
+          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(400)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal("bad request")
+            done()
+          })
       })
       it('should send a status code 401 cause of missing token', (done) => {
         chai.request(app)
-        .post('/reviews')
-        .set('Content-Type', 'application/json')
-        .send(reviewData)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(401)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message[0]).to.equal("you have to login first")
-          done()
-        })
+          .post('/reviews')
+          .set('Content-Type', 'application/json')
+          .send(reviewData)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(401)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message[0]).to.equal("you have to login first")
+            done()
+          })
       })
       it('should send a status code 401 cause of invalid token', (done) => {
         chai.request(app)
-        .post('/reviews')
-        .set('token', invalidToken)
-        .set('Content-Type', 'application/json')
-        .send(reviewData)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(401)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal("Authentication Failed")
-          done()
-        })
+          .post('/reviews')
+          .set('token', invalidToken)
+          .set('Content-Type', 'application/json')
+          .send(reviewData)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(401)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal("Authentication Failed")
+            done()
+          })
       })
     })
   })
@@ -217,25 +224,25 @@ describe('CRUD Review Endpoints', () => {
     describe('success process', () => {
       it('should send an array of object with status code 200', (done) => {
         chai.request(app)
-        .get('/reviews')
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('array')
-          done()
-        })
+          .get('/reviews')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.an('array')
+            done()
+          })
       })
     })
     describe('error process', () => {
       it('should send an array of object with status code 404 cause of wrong endpoint', (done) => {
         chai.request(app)
-        .get('/review')
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .get('/review')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
     })
   })
@@ -243,145 +250,146 @@ describe('CRUD Review Endpoints', () => {
     describe('success process', () => {
       it('should send an object with status code 200', (done) => {
         chai.request(app)
-        .get('/reviews/' + dummyReview.review._id)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object').to.have.all.keys("__v", "_id","score", "message", "images", "itinerary_id", "user_id")
-          done()
-        })
+          .get('/reviews/' + dummyReview.review._id)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.an('object').to.have.all.keys("__v", "_id", "score", "message", "images", "itinerary_id", "user_id")
+            done()
+          })
       })
     })
     describe('error process', () => {
       it('should send an object with status code 404', (done) => {
         chai.request(app)
-        .get('/reviews/' + invalidReviewId)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal('review not found')
-          done()
-        })
+          .get('/reviews/' + invalidReviewId)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal('review not found')
+            done()
+          })
       })
       it('should send an array of object with status code 404 cause of wrong endpoint', (done) => {
         chai.request(app)
-        .get('/review' + dummyReview.review._id)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .get('/review' + dummyReview.review._id)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
       it('should send an array of object with status code 404 cause of wrong endpoint', (done) => {
         chai.request(app)
-        .get('/review/' + dummyReview.review._id)
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .get('/review/' + dummyReview.review._id)
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
     })
   })
   describe('PUT /reviews/:id', () => {
     describe('success process', () => {
       it('should send an object with status code 200', (done) => {
+        console.log(dummyReview, '<<<<<<<?|>>>>>>>>>>>>>')
         chai.request(app)
-        .put('/reviews/' + dummyReview.review._id)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .field('score', 9)
-        .field('message', 'revising review')
-        .field('image', ['dummy3.jpg', 'dummy4.jpg'])
-        .field('itinerary_id', dummyReview.review.itinerary_id)
-        .field('user_id', dummyReview.review.user_id)
-        .field('removedImages', ['dummy1.jpg'])
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .put('/reviews/' + dummyReview.review._id)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', 9)
+          .field('message', 'revising review')
+          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
+          .field('itinerary_id', dummyReview.review.itinerary_id)
+          .field('user_id', dummyReview.review.user_id)
+          .field('removedImages', ['dummy1.jpg'])
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(200)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
     })
     describe('error process', () => {
       it('should send a status code 404 cause of invalid id', (done) => {
         chai.request(app)
-        .put('/reviews/' + invalidReviewId)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .field('score', 9)
-        .field('message', 'revising review')
-        .field('image', ['dummy3.jpg', 'dummy4.jpg'])
-        .field('itinerary_id', dummyReview.review.itinerary_id)
-        .field('user_id', dummyReview.review.user_id)
-        .field('removedImages', ['dummy1.jpg'])
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal('Review not found')
-          done()
-        })
+          .put('/reviews/' + invalidReviewId)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', 9)
+          .field('message', 'revising review')
+          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
+          .field('itinerary_id', dummyReview.review.itinerary_id)
+          .field('user_id', dummyReview.review.user_id)
+          .field('removedImages', ['dummy1.jpg'])
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal('Review not found')
+            done()
+          })
       })
       it('should send a status code 401 cause of invalid token', (done) => {
         chai.request(app)
-        .put('/reviews/' +  dummyReview.review._id)
-        .set('token', invalidToken)
-        .set('Content-Type', 'application/json')
-        .field('score', 9)
-        .field('message', 'revising review')
-        .field('image', ['dummy3.jpg', 'dummy4.jpg'])
-        .field('itinerary_id', dummyReview.review.itinerary_id)
-        .field('user_id', dummyReview.review.user_id)
-        .field('removedImages', ['dummy1.jpg'])
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(401)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal('Authentication Failed')
-          done()
-        })
+          .put('/reviews/' + dummyReview.review._id)
+          .set('token', invalidToken)
+          .set('Content-Type', 'application/json')
+          .field('score', 9)
+          .field('message', 'revising review')
+          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
+          .field('itinerary_id', dummyReview.review.itinerary_id)
+          .field('user_id', dummyReview.review.user_id)
+          .field('removedImages', ['dummy1.jpg'])
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(401)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal('Authentication Failed')
+            done()
+          })
       })
       it('should send a status code 403 cause of invalid user', (done) => {
         chai.request(app)
-        .put('/reviews/' +  dummyReview.review._id)
-        .set('token', userToken)
-        .set('Content-Type', 'application/json')
-        .field('score', 9)
-        .field('message', 'revising review')
-        .field('image', ['dummy3.jpg', 'dummy4.jpg'])
-        .field('itinerary_id', dummyReview.review.itinerary_id)
-        .field('user_id', dummyReview.review.user_id)
-        .field('removedImages', ['dummy1.jpg'])
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(403)
-          expect(res.body).to.be.an('object').to.have.any.keys("message")
-          expect(res.body.message).to.equal('You are not authorized to perform this action')
-          done()
-        })
+          .put('/reviews/' + dummyReview.review._id)
+          .set('token', userToken)
+          .set('Content-Type', 'application/json')
+          .field('score', 9)
+          .field('message', 'revising review')
+          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
+          .field('itinerary_id', dummyReview.review.itinerary_id)
+          .field('user_id', dummyReview.review.user_id)
+          .field('removedImages', ['dummy1.jpg'])
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(403)
+            expect(res.body).to.be.an('object').to.have.any.keys("message")
+            expect(res.body.message).to.equal('You are not authorized to perform this action')
+            done()
+          })
       })
       it('should send a status code 404 cause of invalid endpoint', (done) => {
         chai.request(app)
-        .put('/review/' + dummyReview.review._id)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .field('score', 9)
-        .field('message', 'revising review')
-        .field('image', ['dummy3.jpg', 'dummy4.jpg'])
-        .field('itinerary_id', dummyReview.review.itinerary_id)
-        .field('user_id', dummyReview.review.user_id)
-        .field('removedImages', ['dummy1.jpg'])
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .put('/review/' + dummyReview.review._id)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .field('score', 9)
+          .field('message', 'revising review')
+          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
+          .field('itinerary_id', dummyReview.review.itinerary_id)
+          .field('user_id', dummyReview.review.user_id)
+          .field('removedImages', ['dummy1.jpg'])
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
     })
   })
@@ -389,64 +397,64 @@ describe('CRUD Review Endpoints', () => {
     describe('error process', () => {
       it('should send an object with message You are not authorized to perform this action and status code 403 because of using other user\'s token', (done) => {
         chai.request(app)
-        .delete('/reviews/' + dummyReview.review._id)
-        .set('token', userToken)
-        .set('Content-Type', 'application/json')
-        .end((err, res) => {
-          expect(err).to.be.null
-          expect(res).to.have.status(403)
-          expect(res.body.message).to.equal('You are not authorized to perform this action')
-          done()
-        })
+          .delete('/reviews/' + dummyReview.review._id)
+          .set('token', userToken)
+          .set('Content-Type', 'application/json')
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res).to.have.status(403)
+            expect(res.body.message).to.equal('You are not authorized to perform this action')
+            done()
+          })
       })
       it('should send an object with message review not found and status code 404 because of invalid id', (done) => {
         chai.request(app)
-        .delete('/reviews/' + invalidReviewId)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .end((err, res) => {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body.message).to.equal('Review not found')
-          done()
-        })
+          .delete('/reviews/' + invalidReviewId)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body.message).to.equal('Review not found')
+            done()
+          })
       })
       it('should send an object with message Authentication Failed and status code 401 because of invalid token', (done) => {
         chai.request(app)
-        .delete('/reviews/' + dummyReview.review._id)
-        .set('token', invalidToken)
-        .set('Content-Type', 'application/json')
-        .end((err, res) => {
-          expect(err).to.be.null
-          expect(res).to.have.status(401)
-          expect(res.body.message).to.equal('Authentication Failed')
-          done()
-        })
+          .delete('/reviews/' + dummyReview.review._id)
+          .set('token', invalidToken)
+          .set('Content-Type', 'application/json')
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res).to.have.status(401)
+            expect(res.body.message).to.equal('Authentication Failed')
+            done()
+          })
       })
       it('should send a status code 404 cause of invalid endpoint', (done) => {
         chai.request(app)
-        .delete('/review/' + dummyReview.review._id)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .end(function(err, res) {
-          expect(err).to.be.null
-          expect(res).to.have.status(404)
-          expect(res.body).to.be.an('object')
-          done()
-        })
+          .delete('/review/' + dummyReview.review._id)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .end(function (err, res) {
+            expect(err).to.be.null
+            expect(res).to.have.status(404)
+            expect(res.body).to.be.an('object')
+            done()
+          })
       })
     })
     describe('success process', () => {
       it('should send status code 204', (done) => {
         chai.request(app)
-        .delete('/reviews/' + dummyReview.review._id)
-        .set('token', userToken2)
-        .set('Content-Type', 'application/json')
-        .end((err, res) => {
-          expect(err).to.be.null
-          expect(res).to.have.status(204)
-          done()
-        })
+          .delete('/reviews/' + dummyReview.review._id)
+          .set('token', userToken2)
+          .set('Content-Type', 'application/json')
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res).to.have.status(204)
+            done()
+          })
       })
     })
   })
