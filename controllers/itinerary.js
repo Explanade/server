@@ -98,6 +98,9 @@ class ItineraryController {
               res.status(200).json(data)
             })
         }
+      })
+      .catch(next)
+  }
 
   static getUsersItineraries(req, res, next) {
     console.log('masukkkkkkkkkkkkk$$$$$$$$$$$$$$$$$$$$$$$$$')
