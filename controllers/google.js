@@ -24,7 +24,6 @@ class GoogleController {
               }
             })
             data.results[i].photo = 'https://lh3.googleusercontent.com/' + photo.request.path;
-            console.log(data.results[i].photo)
           }
         }
 

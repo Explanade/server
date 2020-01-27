@@ -20,14 +20,7 @@ const activitySchema = new Schema({
       icon: String,
       id: String,
       name: String,
-      photos: [
-        {
-          height: Number,
-          // html_attributions: [String],
-          photo_reference: String,
-          width: Number
-        }
-      ],
+      photo: String,
       place_id: String,
       price_level: Number,
       rating: Number,
