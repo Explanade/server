@@ -45,7 +45,8 @@ class ActivityController {
   static updateActivity(req, res, next) {
     let activity_id = req.params.id
     let { place_id, status } = req.body
-    Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } })  
+    console.log(place_id, 'FROM CONTROLLER&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+    Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } }, { new: true })  
     .then(result => {
         console.log(result)
         res.status(200).json(result)

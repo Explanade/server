@@ -1,7 +1,7 @@
 const Review = require('../models/review')
 const Itinerary = require('../models/itinerary')
 const gcsDelete = require('../helpers/removeGCS')
-console.log(Itinerary)
+
 class ReviewController {
   static create(req, res, next) {
     let newReview = ''
@@ -46,10 +46,8 @@ class ReviewController {
   static update(req, res, next) {
     let review_id = req.params.id
     let { score, message, images, itinerary_id, user_id, removedImages } = req.body
-    console.log(req.body)
     Review.findById({ _id: review_id })
       .then(review => {
-        console.log(review, 'ADAAAAAAA REVIEW DOT IMAGESSSSSSSSSSSSSSSSSSSSSSSSS')
         // if(review) {
           let notDeletedImages = []
           review.images.forEach(oldImage => {
