@@ -1,20 +1,37 @@
-const googlePlaces = require('../config/googlePlaces');
+const { googlePlaces, googlePhotos } = require('../config/googlePlaces');
 
 
 class GoogleController {
-  static getPlaces(req, res, next) {
+  static async getPlaces(req, res, next) {
       const { query } = req.query;
-      googlePlaces({
-        method: 'get',
-        params: {
-          query,
-          key: process.env.GOOGLE_KEY
+
+      try {
+        const { data } = await googlePlaces({
+          method: 'get',
+          params: {
+            query,
+            key: process.env.GOOGLE_KEY
+          }
+        })
+
+        if (data) {
+          for (let i = 0; i < data.results.length; i++) {
+            const photo = await googlePhotos({
+              params: {
+                maxwidth: 400,
+                key: process.env.GOOGLE_KEY,
+                photoreference: data.results[i].photos[0].photo_reference
+              }
+            })
+            data.results[i].photo = 'https://lh3.googleusercontent.com/' + photo.request.path;
+            console.log(data.results[i].photo)
+          }
         }
-      })
-      .then(({data}) => {
-          res.status(200).json(data);
-      })
-      .catch(next) 
+
+        res.status(200).json(data)
+      } catch(e) {
+        next(e)
+      }
   }
 }
 

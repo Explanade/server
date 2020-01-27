@@ -6,6 +6,7 @@ const activitySchema = new Schema({
     ref: 'Itinerary'
   },
   date: Date,
+  orderIndex: String,
   places: [
     {
       status: {
@@ -32,7 +33,11 @@ const activitySchema = new Schema({
       rating: Number,
       user_ratings_total: Number
     }
-  ]
+  ],
+  itineraryId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Itinerary'
+  }
 })
 
 const Activity = model('Activity', activitySchema)
