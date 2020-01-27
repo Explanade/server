@@ -21,7 +21,9 @@ class UserController {
                 let payload = {
                     id: user._id,
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    profile_picture: user.profile_picture
+
                 }
                 let token = generateToken(payload)
                 res.status(201).json({ token, user })
@@ -73,7 +75,8 @@ class UserController {
                         let user = {
                             name: foundUser.name,
                             email: foundUser.email,
-                            id: foundUser._id
+                            id: foundUser._id,
+                            profile_picture: foundUser.profile_picture
                         }
                         const token = generateToken(user)
                         res.status(200).json({ token, user })
