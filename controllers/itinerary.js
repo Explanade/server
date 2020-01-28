@@ -13,6 +13,7 @@ class ItineraryController {
       end,
       total_days
     }
+    console.log(req.body)
     if(!name || !location || !start_date || !end_date) {
       res.status(400).json({ message: 'bad request' })
     } else {
@@ -52,7 +53,7 @@ class ItineraryController {
     const keys = Object.keys(activities)
     let counter = 0;
     let createdActivitiesId = [];
-
+    console.log(activities)
     Itinerary.findById({ _id: itinerary._id })
       .then(data => {
         if (data.activities.length <= 0) {
