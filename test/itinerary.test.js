@@ -112,7 +112,7 @@ describe('CRD Itinerary Endpoints', function() {
           dummyItinerary.activities = activities;
           expect(err).to.be.null
           expect(res).to.have.status(201)
-          expect(res.body).to.be.an('object').to.have.all.keys("_id",'name', 'location', "date", "user_id", "activities", "reviews", "__v")
+          expect(res.body).to.be.an('object').to.have.all.keys("_id",'name', 'location', "date", "user_id", "activities", "reviews", "__v", "budget")
           done()
         })
       })

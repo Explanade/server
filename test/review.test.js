@@ -68,7 +68,7 @@ before(function (done) {
       return Itinerary.create(dummyItineraryData)
     })
     .then(itinerary => {
-      reviewData.itinerary_id = itinerary.id
+      reviewData.itinerary_id = itinerary._id
       return User.create(secondUser)
     })
     .then(user2 => {
@@ -122,9 +122,7 @@ describe('CRUD Review Endpoints', () => {
           .post('/reviews')
           .set('token', userToken2)
           .set('Content-Type', 'application/json')
-          .field('score', reviewData.score)
-          .field('message', reviewData.message)
-          .field('itinerary_id', reviewData.itinerary_id)
+          .send(reviewData)
           .end(function (err, res) {
             dummyReview = res.body
             expect(err).to.be.null
@@ -137,12 +135,13 @@ describe('CRUD Review Endpoints', () => {
     })
     describe('error process', () => {
       it('should send a status code 400 cause of missing score', (done) => {
+        const missingScore = { ...dummyReview }
+        delete missingScore.score
         chai.request(app)
           .post('/reviews')
           .set('token', userToken2)
           .set('Content-Type', 'application/json')
-          .field('message', reviewData.message)
-          .field('itinerary_id', reviewData.itinerary_id)
+          .send(missingScore)
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(400)
@@ -152,12 +151,13 @@ describe('CRUD Review Endpoints', () => {
           })
       })
       it('should send a status code 400 cause of missing message', (done) => {
+        const missingMessage = { ...dummyReview }
+        delete missingMessage.message
         chai.request(app)
           .post('/reviews')
           .set('token', userToken2)
           .set('Content-Type', 'application/json')
-          .field('score', reviewData.score)
-          .field('itinerary_id', reviewData.itinerary_id)
+          .send(missingMessage)
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(400)
@@ -244,7 +244,7 @@ describe('CRUD Review Endpoints', () => {
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(200)
-            expect(res.body).to.be.an('object').to.have.all.keys("__v", "_id", "score", "message", "images", "itinerary_id", "user_id")
+            expect(res.body).to.be.an('object').to.have.all.keys("__v", "_id", "score", "message", "itinerary_id", "user_id")
             done()
           })
       })
