@@ -47,7 +47,10 @@ class ActivityController {
     let { place_id, status } = req.body
     Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } }, { new: true })  
     .then(result => {
-        res.status(200).json(result)
+      return Itinerary.findOne({ _id: result.itineraryId }).populate('activities')
+    })
+    .then(data => {
+      res.status(200).json(data)
       })
       .catch(next)
   }
