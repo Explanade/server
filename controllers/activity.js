@@ -45,19 +45,11 @@ class ActivityController {
   static updateActivity(req, res, next) {
     let activity_id = req.params.id
     let { place_id, status } = req.body
-    Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } })  
+    Activity.findOneAndUpdate({ _id: activity_id, "places.id": place_id }, { $set: { 'places.$.status': status } }, { new: true })  
     .then(result => {
-        console.log(result)
         res.status(200).json(result)
       })
       .catch(next)
-  }
-
-  static updatePlaceStatus(req, res, next) {
-    let activity_id = req.params.id
-    let { place } = req.body
-    
-    Activity.findById
   }
 
   static deleteActivity(req, res, next) {

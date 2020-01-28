@@ -28,6 +28,7 @@ class ItineraryController {
     let itinerary_id = req.params.id
     Itinerary.findOne({ _id: itinerary_id })
       .populate('activities')
+      .populate('user_id')
       .then(itinerary => {
         if(itinerary) res.status(200).json(itinerary)
         else next({ message: 'itinerary not found', status: 404 })
@@ -70,7 +71,6 @@ class ItineraryController {
               createdActivitiesId.push(data._id)
             })
             .catch(next)
-      
           })
       
           Promise.all(promises)

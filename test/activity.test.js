@@ -277,13 +277,12 @@ describe('CRUD Activity Endpoints', () => {
   describe('GET /activities/:id', () => {
     describe('success process', () => {
       it('should send an object with status code 200', (done) => {
-        console.log(dummyActivity.activity._id, '++++++++++++++++++++++')
         chai.request(app)
         .get('/activities/' + dummyActivity.activity._id)
         .end(function(err, res) {
           expect(err).to.be.null
           expect(res).to.have.status(200)
-          expect(res.body).to.be.an('object').to.have.all.keys("__v", "_id","date", "places")
+          expect(res.body).to.be.an('object').to.have.all.keys("__v", 'itinerary_id', "_id","date", "places")
           done()
         })
       })
@@ -302,6 +301,31 @@ describe('CRUD Activity Endpoints', () => {
       })
     })
   })
+
+  
+  describe('PATCH /activities/:id', () => {
+    describe('success process', () => {
+      it('should send and object (data) with status code 200', (done) => {
+        let updateData = {
+          place_id: dummyActivity.activity.places[0].id,
+          status: true
+        }
+        chai.request(app)
+        .patch('/activities/' + dummyActivity.activity._id)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send(updateData)
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+    })
+    
+  })
+  
   describe('DELETE /activities/:id', () => {
     describe('error process', () => {
       it('should send status code 403 cause of invalid id', (done) => {
