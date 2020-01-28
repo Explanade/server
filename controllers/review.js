@@ -5,12 +5,12 @@ const gcsDelete = require('../helpers/removeGCS')
 class ReviewController {
   static create(req, res, next) {
     let newReview = ''
-    let { score, message, images, itinerary_id } = req.body
+    let { score, message, itinerary_id } = req.body
     let user_id = req.loggedUser.id
     if(!score || !message || !itinerary_id ) {
       res.status(400).json({ message: 'bad request' })
     } else {
-      Review.create({ score, message, images, itinerary_id, user_id })
+      Review.create({ score, message, itinerary_id, user_id })
         .then(review => {
           newReview = review
           return Itinerary.updateOne({ _id: itinerary_id }, { $push: { reviews: review._id } })
@@ -33,6 +33,7 @@ class ReviewController {
   static getOne(req, res, next) {
     let review_id = req.params.id
     Review.findOne({ _id: review_id })
+      .populate('user_id')
       .then(review => {
         if(review) {
           res.status(200).json(review)
@@ -45,36 +46,8 @@ class ReviewController {
 
   static update(req, res, next) {
     let review_id = req.params.id
-    let { score, message, images, itinerary_id, user_id, removedImages } = req.body
-    Review.findById({ _id: review_id })
-      .then(review => {
-        // if(review) {
-          // let notDeletedImages = []
-          // review.images.forEach(oldImage => {
-          //   if(removedImages.indexOf(oldImage) == -1 ) {
-          //     notDeletedImages.push(oldImage)
-          //   }
-          // })
-          // images.forEach(newImage => {
-          //   notDeletedImages.push(newImage)
-          // })
-
-          // let gonnaBeDeletedImages = []
-          // if(removedImages) {
-          //   if(typeof removedImages == 'string') {
-          //     gonnaBeDeletedImages.push(removedImages)
-            // } else {
-            //   gonnaBeDeletedImages = removedImages
-          //   }
-          // }
-          // gonnaBeDeletedImages.forEach(image => {
-          //   gcsDelete(image)
-          // })
-          return Review.findByIdAndUpdate(review_id, { $set: { score, message, images, itinerary_id, user_id } }, { runValidators: true, omitUndefined: true, new: true })
-        // } else {
-        //   throw ({ status: 404, message: 'Review not found' })
-        // }
-      })
+    let { score, message, itinerary_id, user_id } = req.body
+    Review.findByIdAndUpdate(review_id, { $set: { score, message, itinerary_id, user_id } }, { runValidators: true, omitUndefined: true, new: true })
       .then(result => {
         res.status(200).json(result)
       })

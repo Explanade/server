@@ -29,6 +29,7 @@ class ItineraryController {
     Itinerary.findOne({ _id: itinerary_id })
       .populate('activities')
       .populate('user_id')
+      .populate('reviews')
       .then(itinerary => {
         if(itinerary) res.status(200).json(itinerary)
         else next({ message: 'itinerary not found', status: 404 })
@@ -40,6 +41,12 @@ class ItineraryController {
     Itinerary.find()
       .populate('activities')
       .populate('user_id')
+      .populate({
+        path: 'reviews',
+        populate: {
+          path: 'user_id'
+        }
+      })
       .then(itineraries => {
         res.status(200).json(itineraries)
       })
