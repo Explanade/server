@@ -118,13 +118,7 @@ before(function (done) {
     .then(itinerary => {
       let dummyActivityData = { ...activityData }
       dummyActivityData.itinerary_id = itinerary._id
-      // let tempItinerary = itinerary
-      // tempItinerary.activities = dummyActivityData
-
       return User.create(secondUser)
-    //   return ItineraryController.updateItinerary(activityData)
-    // .then(activity => {
-    // })
     .then(user2 => {
       userToken2 = generateToken({
         id: user2._id,
