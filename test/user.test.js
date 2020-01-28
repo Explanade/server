@@ -86,7 +86,10 @@ describe('USER ENDPOINTS', function () {
             it('should return status 201: user success registered', (done) => {
                 chai.request(app)
                     .post(`/user/register`)
-                    .send(newUser)
+                    .field('name', 'newUser')
+                    .field('email', 'newUser@mail.com')
+                    .field('password', 'newUser')
+                    .attach('profile_picture', fs.readFileSync('./test/assets/avatar.png'), 'avatar.png')
                     .end((err, res) => {
                         expect(err).to.be.null
                         expect(res).to.have.status(201)
