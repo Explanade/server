@@ -1,5 +1,6 @@
 const Itinerary = require('../models/itinerary');
 const Activity = require('../models/activity');
+const Review = require('../models/review');
 const { renderItineraryDate, renderActivityDate } = require('./methods');
 
 
@@ -152,29 +153,53 @@ const tokyoDay2 = [
     }
 ]
 
-module.exports = async(explanadeTeam) => {
-    const tokyoItinerary = await Itinerary.create({ 
-        name: tokyoTrip.name, 
-        location: tokyoTrip.location, 
-        date: renderItineraryDate(tokyoTrip.start_date, tokyoTrip.end_date), 
-        user_id: explanadeTeam._id 
-    })
+module.exports = async(users) => {
+  const { explanadeTeam, angela, afifah, dzaky, alfred, andreas } = users;
 
-    const tokyoActivityDay1 = await Activity.create({
-        itineraryId: tokyoItinerary._id,
-        orderIndex: 0,
-        places: tokyoDay1,
-        date: renderActivityDate(tokyoItinerary.date.start, 0)
-    })
+  const tokyoItinerary = await Itinerary.create({ 
+      name: tokyoTrip.name, 
+      location: tokyoTrip.location, 
+      date: renderItineraryDate(tokyoTrip.start_date, tokyoTrip.end_date), 
+      user_id: explanadeTeam._id 
+  })
 
-    const tokyoActivityDay2 = await Activity.create({
-        itineraryId: tokyoItinerary._id,
-        orderIndex: 1,
-        places: tokyoDay2,
-        date: renderActivityDate(tokyoItinerary.date.start, 1)
-    })
+  const tokyoActivityDay1 = await Activity.create({
+      itineraryId: tokyoItinerary._id,
+      orderIndex: 0,
+      places: tokyoDay1,
+      date: renderActivityDate(tokyoItinerary.date.start, 0)
+  })
 
-    await Itinerary.findOneAndUpdate({ _id: tokyoItinerary._id }, {
-        activities: [tokyoActivityDay1._id, tokyoActivityDay2._id]
-    },{ returnOriginal: false })
+  const tokyoActivityDay2 = await Activity.create({
+      itineraryId: tokyoItinerary._id,
+      orderIndex: 1,
+      places: tokyoDay2,
+      date: renderActivityDate(tokyoItinerary.date.start, 1)
+  })
+
+  const review1 = await Review.create({
+    score: 5,
+    message: `Explanade has made the usual time-consuming trip-planning so much easier for me and I honestly had an UNFORGETTABLE and AMAZING trip to Tokyo. If I could take this trip again, I would not change a single aspect of this itinerary! I highly recommend this app to anyone planning a vacation!`,
+    itinerary_id: tokyoItinerary._id,
+    user_id: angela._id
+  })
+
+  const review2 = await Review.create({
+    score: 5,
+    message: `This travel app nailed it! They provided a trip that exceeded all expectations. Natural beauty, culture, adventure and romance, we got to know The Tokyo we didn’t know existed. Thanks to all of the people in Explanade that made it happen.`,
+    itinerary_id: tokyoItinerary._id,
+    user_id: afifah._id
+  })
+
+  const review3 = await Review.create({
+    score: 4,
+    message: `Both the itinerary and the travel app were spectacular. We had never traveled to Tokyo and weren't quite sure what to expect. This team has made the entire experience a delight. Tokyo is a diverse and beautiful country. The people are kind and generous. We will most definitely return and will browse through the itineraries in Explanade again!.`,
+    itinerary_id: tokyoItinerary._id,
+    user_id: dzaky._id
+  })
+
+  await Itinerary.findOneAndUpdate({ _id: tokyoItinerary._id }, {
+      activities: [tokyoActivityDay1._id, tokyoActivityDay2._id],
+      reviews: [review1, review2, review3]
+  },{ returnOriginal: false })
 }

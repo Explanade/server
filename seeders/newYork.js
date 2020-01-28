@@ -262,7 +262,9 @@ const newYorkDay3 = [
     }
 ]
 
-module.exports = async(explanadeTeam) => {
+module.exports = async(users) => {
+    const { explanadeTeam, angela, afifah, dzaky, alfred, andreas } = users;
+
     const newYorkItinerary = await Itinerary.create({ 
         name: newYorkTrip.name, 
         location: newYorkTrip.location, 
