@@ -301,6 +301,7 @@ describe('CRUD Activity Endpoints', () => {
       })
     })
   })
+
   
   describe('PATCH /activities/:id', () => {
     describe('success process', () => {
