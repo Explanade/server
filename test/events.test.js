@@ -52,3 +52,8 @@ describe('Fetch Events API', function () {
     })
   })
 })
+    })
+    
+  })
+  
+})

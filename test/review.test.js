@@ -119,7 +119,7 @@ describe('CRUD Review Endpoints', () => {
   describe('POST /reviews', () => {
     describe('success process', () => {
       it('should return an object (data) with status code 201', (done) => {
-        console.log(reviewData.itinerary_id)
+        // console.log(reviewData.itinerary_id)
         chai.request(app)
           .post('/reviews')
           .set('token', userToken2)
@@ -296,7 +296,7 @@ describe('CRUD Review Endpoints', () => {
   describe('PUT /reviews/:id', () => {
     describe('success process', () => {
       it('should send an object with status code 200', (done) => {
-        console.log(dummyReview, '<<<<<<<?|>>>>>>>>>>>>>')
+        // console.log(dummyReview, '<<<<<<<?|>>>>>>>>>>>>>')
         chai.request(app)
           .put('/reviews/' + dummyReview.review._id)
           .set('token', userToken2)

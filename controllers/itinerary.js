@@ -71,7 +71,6 @@ class ItineraryController {
               createdActivitiesId.push(data._id)
             })
             .catch(next)
-      
           })
           Promise.all(promises)
             .then(data => {
