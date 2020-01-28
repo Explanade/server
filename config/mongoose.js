@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 // const db = process.env.URL_DB + '-' + process.env.NODE_ENV
-const db = process.env.MONGO_ATLAS
-// const db = process.env.URL_DB + '-' + 'test'
+// const db = process.env.MONGO_ATLAS
+const db = process.env.URL_DB + '-' + 'test'
 
 mongoose.connect(db, {
     useNewUrlParser: true,

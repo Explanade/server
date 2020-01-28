@@ -60,7 +60,7 @@ class UserController {
     }
 
     static login(req, res, next) {
-
+        console.log(req.body)
         let { email, password } = req.body
         User.findOne({
             email: email

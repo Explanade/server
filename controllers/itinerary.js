@@ -38,6 +38,7 @@ class ItineraryController {
   static getItineraries(req, res, next) {
     Itinerary.find()
       .populate('activities')
+      .populate('user_id')
       .then(itineraries => {
         res.status(200).json(itineraries)
       })
@@ -106,6 +107,7 @@ class ItineraryController {
     const user_id = req.loggedUser.id
     Itinerary.find({ user_id })
       .populate('activities')
+      .populate('user_id')
       .then(itineraries => {
         res.status(200).json(itineraries)
       })
