@@ -11,6 +11,7 @@ const expect = chai.expect
 let userToken = ''
 let userToken2 = ''
 let dummyItinerary = ''
+let itinWithActivities = ''
 let invalidItineraryId = '5e2b17d2a426a922c7c403c8'
 
 let user = {
@@ -34,6 +35,30 @@ let itineraryData = {
   },
   start_date: '01/20/2020',
   end_date: '01/22/2020'
+}
+
+let activities = {
+  '0': [
+    {
+      formatted_address: '1 Chome-9 Dotonbori, Chuo Ward, Osaka, 542-0071, Japan',
+      geometry: [],
+      icon: 'https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png',
+      id: '321f2ea5c52bbb02c764eb49ffb19122b53ec668',
+      name: 'Dotonbori',
+      opening_hours: [],
+      photos: [],
+      place_id: 'ChIJ_fmKgRPnAGARkKWLtCYTu7g',
+      plus_code: [],
+      rating: 4.3,
+      reference: 'ChIJ_fmKgRPnAGARkKWLtCYTu7g',
+      types: [],
+      user_ratings_total: 49585,
+      photo: 'https://lh3.googleusercontent.com//p/AF1QipNIiMbztZtZTXFoRJjAqbG_27IDNdyWDnYfCmP9=s1600-w400',
+      lat: 34.6687315,
+      lng: 135.5012911,
+      order: 0
+    }
+  ]
 }
 
 before(function(done) {
@@ -84,6 +109,7 @@ describe('CRD Itinerary Endpoints', function() {
         .send(itineraryData)
         .end(function(err, res) {
           dummyItinerary = res.body
+          dummyItinerary.activities = activities;
           expect(err).to.be.null
           expect(res).to.have.status(201)
           expect(res.body).to.be.an('object').to.have.all.keys("_id",'name', 'location', "date", "user_id", "activities", "reviews", "__v")
@@ -164,6 +190,40 @@ describe('CRD Itinerary Endpoints', function() {
           done()
         })
       })
+    })
+  })
+  describe('PUT /itineraries', () => {
+    describe('success process', () => {
+      it('should return an object (data) with status code 200', (done) => {
+        chai.request(app)
+        .put(`/itineraries/${dummyItinerary._id}`)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send({itinerary: dummyItinerary})
+        .end(function(err, res) {
+          itinWithActivities = res.body
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+      it('should return an object (data) with status code 200', (done) => {
+        chai.request(app)
+        .put(`/itineraries/${dummyItinerary._id}`)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send({itinerary: dummyItinerary})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+    })
+    describe('error process', () => {
+
     })
   })
   describe('GET /itineraries', () => {

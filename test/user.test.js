@@ -95,6 +95,22 @@ describe('USER ENDPOINTS', function () {
                         done()
                     })
             })
+
+            it('should return status 201: user success registered', (done) => {
+                chai.request(app)
+                    .post(`/user/register`)
+                    .field('name', 'newUser2')
+                    .field('email', 'newUser2@mail.com')
+                    .field('password', 'newUser2')
+                    .attach('profile_picture', fs.readFileSync('./test/assets/avatar.png'), 'avatar.png')
+                    .end((err, res) => {
+                        expect(err).to.be.null
+                        expect(res).to.have.status(201)
+                        expect(res.body).to.be.an('Object').to.have.all.keys('token', 'user')
+                        expect(res.body.password).to.be.not.equal(newUser.password)
+                        done()
+                    })
+            })
         })
 
         describe(`error or failed response:`, () => {

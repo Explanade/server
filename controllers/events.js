@@ -11,7 +11,7 @@ module.exports = {
             }
         })
             .then(({data}) => {
-                if(data.events.event.length <= 0){
+                if(data.events == null || data.events.event.length <= 0){
                     res.status(200).json([])
                 }
 

@@ -7,8 +7,6 @@ router.get('/my-itineraries', authentication, ItineraryController.getUsersItiner
 router.get('/:id', ItineraryController.getOneItinerary)
 router.post('/', authentication, ItineraryController.create)
 router.put('/:id', authentication, authorization, ItineraryController.updateItinerary)
-// router.patch('/:id/add-activity', ItineraryController.addActivity)
-// router.patch('/:id/remove-activity', ItineraryController.removeActivity)
 // router.patch('/:id/write-review', ItineraryController.writeReview)
 router.delete('/:id', authentication, authorization, ItineraryController.deleteItinerary)
 

@@ -49,28 +49,28 @@ class ReviewController {
     Review.findById({ _id: review_id })
       .then(review => {
         // if(review) {
-          let notDeletedImages = []
-          review.images.forEach(oldImage => {
-            if(removedImages.indexOf(oldImage) == -1 ) {
-              notDeletedImages.push(oldImage)
-            }
-          })
-          images.forEach(newImage => {
-            notDeletedImages.push(newImage)
-          })
+          // let notDeletedImages = []
+          // review.images.forEach(oldImage => {
+          //   if(removedImages.indexOf(oldImage) == -1 ) {
+          //     notDeletedImages.push(oldImage)
+          //   }
+          // })
+          // images.forEach(newImage => {
+          //   notDeletedImages.push(newImage)
+          // })
 
-          let gonnaBeDeletedImages = []
-          if(removedImages) {
-            if(typeof removedImages == 'string') {
-              gonnaBeDeletedImages.push(removedImages)
+          // let gonnaBeDeletedImages = []
+          // if(removedImages) {
+          //   if(typeof removedImages == 'string') {
+          //     gonnaBeDeletedImages.push(removedImages)
             // } else {
             //   gonnaBeDeletedImages = removedImages
-            }
-          }
-          gonnaBeDeletedImages.forEach(image => {
-            gcsDelete(image)
-          })
-          return Review.findByIdAndUpdate(review_id, { $set: { score, message, notDeletedImages, itinerary_id, user_id } }, { runValidators: true, omitUndefined: true, new: true })
+          //   }
+          // }
+          // gonnaBeDeletedImages.forEach(image => {
+          //   gcsDelete(image)
+          // })
+          return Review.findByIdAndUpdate(review_id, { $set: { score, message, images, itinerary_id, user_id } }, { runValidators: true, omitUndefined: true, new: true })
         // } else {
         //   throw ({ status: 404, message: 'Review not found' })
         // }
