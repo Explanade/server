@@ -120,15 +120,15 @@ class ItineraryController {
       .catch(next)
   }
 
-  // static writeReview(req, res, next) {
-  //   let itinerary_id = req.params.id
-  //   let { review_id } = req.body
-  //   Itinerary.updateOne({ _id: itinerary_id }, { $push: { reviews: review_id } })
-  //     .then(result => {
-  //       res.status(200).json(result)
-  //     })
-  //     .catch(next)
-  // }
+  static addBudget(req, res, next) {
+    let itinerary_id = req.params.id
+    let { budget } = req.body
+    Itinerary.findByIdAndUpdate(itinerary_id, { $set: { budget } }, { omitUndefined: true, new: true })
+      .then(result => {
+        res.status(200).json(result)
+      })
+      .catch(next)
+  }
 
   static deleteItinerary(req, res, next) {
     let itinerary_id = req.params.id

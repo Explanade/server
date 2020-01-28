@@ -7,7 +7,7 @@ router.get('/my-itineraries', authentication, ItineraryController.getUsersItiner
 router.get('/:id', ItineraryController.getOneItinerary)
 router.post('/', authentication, ItineraryController.create)
 router.put('/:id', authentication, authorization, ItineraryController.updateItinerary)
-// router.patch('/:id/write-review', ItineraryController.writeReview)
+router.patch('/:id', authentication, authorization, ItineraryController.addBudget)
 router.delete('/:id', authentication, authorization, ItineraryController.deleteItinerary)
 
 module.exports = router

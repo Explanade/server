@@ -222,10 +222,27 @@ describe('CRD Itinerary Endpoints', function() {
         })
       })
     })
-    describe('error process', () => {
-
-    })
   })
+  describe('PATCH /itineraries/:id', () => {
+    describe('success process', () => {
+      it('should return an object and status code 200', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${dummyItinerary._id}`)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send({budget: 10000000})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(200)
+          expect(res.body).to.be.an('object')
+          expect(res.body).to.be.have.any.key('budget')
+          done()
+        })
+      })
+    })
+    
+  })
+  
   describe('GET /itineraries', () => {
     describe('success process', () => {
       it('should send an array of object with status code 200', (done) => {

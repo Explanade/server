@@ -30,7 +30,11 @@ const itinerarySchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Review'
     }
-  ]
+  ],
+  budget: {
+    type: Number,
+    default: 0
+  }
 })
 
 const Itinerary = model('Itinerary', itinerarySchema)
