@@ -174,29 +174,31 @@ const parisDay2 = [
     }
 ]
 
-module.exports = async(explanadeTeam) => {
-    const parisItinerary = await Itinerary.create({ 
-        name: parisTrip.name, 
-        location: parisTrip.location, 
-        date: renderItineraryDate(parisTrip.start_date, parisTrip.end_date), 
-        user_id: explanadeTeam._id 
-    })
+module.exports = async(users) => {
+  const { explanadeTeam, angela, afifah, dzaky, alfred, andreas } = users;
 
-    const parisActivityDay1 = await Activity.create({
-        itineraryId: parisItinerary._id,
-        orderIndex: 0,
-        places: parisDay1,
-        date: renderActivityDate(parisItinerary.date.start, 0)
-    })
+  const parisItinerary = await Itinerary.create({ 
+      name: parisTrip.name, 
+      location: parisTrip.location, 
+      date: renderItineraryDate(parisTrip.start_date, parisTrip.end_date), 
+      user_id: explanadeTeam._id 
+  })
 
-    const parisActivityDay2 = await Activity.create({
-        itineraryId: parisItinerary._id,
-        orderIndex: 1,
-        places: parisDay2,
-        date: renderActivityDate(parisItinerary.date.start, 1)
-    })
+  const parisActivityDay1 = await Activity.create({
+      itineraryId: parisItinerary._id,
+      orderIndex: 0,
+      places: parisDay1,
+      date: renderActivityDate(parisItinerary.date.start, 0)
+  })
 
-    await Itinerary.findOneAndUpdate({ _id: parisItinerary._id }, {
-        activities: [parisActivityDay1._id, parisActivityDay2._id]
-    },{ returnOriginal: false })
+  const parisActivityDay2 = await Activity.create({
+      itineraryId: parisItinerary._id,
+      orderIndex: 1,
+      places: parisDay2,
+      date: renderActivityDate(parisItinerary.date.start, 1)
+  })
+
+  await Itinerary.findOneAndUpdate({ _id: parisItinerary._id }, {
+      activities: [parisActivityDay1._id, parisActivityDay2._id]
+  },{ returnOriginal: false })
 }
