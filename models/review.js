@@ -11,7 +11,6 @@ const reviewSchema = new Schema({
     type: String,
     required: [true, 'Please enter your message']
   },
-  images: [String],
   user_id: {
     type: Schema.Types.ObjectId,
     ref: 'User'

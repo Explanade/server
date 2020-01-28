@@ -5,8 +5,6 @@ const User = require('../models/user')
 const Itinerary = require('../models/itinerary')
 const Review = require('../models/review')
 const { generateToken } = require('../helpers/jwt')
-const fs = require('fs');
-
 
 chai.use(chaiHttp)
 const expect = chai.expect
@@ -127,8 +125,6 @@ describe('CRUD Review Endpoints', () => {
           .field('score', reviewData.score)
           .field('message', reviewData.message)
           .field('itinerary_id', reviewData.itinerary_id)
-          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
-          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
           .end(function (err, res) {
             dummyReview = res.body
             expect(err).to.be.null
@@ -147,8 +143,6 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('message', reviewData.message)
           .field('itinerary_id', reviewData.itinerary_id)
-          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
-          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(400)
@@ -164,8 +158,6 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', reviewData.score)
           .field('itinerary_id', reviewData.itinerary_id)
-          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
-          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(400)
@@ -181,8 +173,6 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', reviewData.score)
           .field('message', reviewData.message)
-          .attach('images', fs.readFileSync('./test/assets/chicken_1.png'), 'chicken_1.png')
-          .attach('images', fs.readFileSync('./test/assets/chicken_2.png'), 'chicken_2.png')
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(400)
@@ -303,10 +293,8 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', 9)
           .field('message', 'revising review')
-          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
           .field('itinerary_id', dummyReview.review.itinerary_id)
           .field('user_id', dummyReview.review.user_id)
-          .field('removedImages', ['dummy1.jpg'])
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(200)
@@ -323,10 +311,8 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', 9)
           .field('message', 'revising review')
-          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
           .field('itinerary_id', dummyReview.review.itinerary_id)
           .field('user_id', dummyReview.review.user_id)
-          .field('removedImages', ['dummy1.jpg'])
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(404)
@@ -342,10 +328,8 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', 9)
           .field('message', 'revising review')
-          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
           .field('itinerary_id', dummyReview.review.itinerary_id)
           .field('user_id', dummyReview.review.user_id)
-          .field('removedImages', ['dummy1.jpg'])
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(401)
@@ -361,10 +345,8 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', 9)
           .field('message', 'revising review')
-          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
           .field('itinerary_id', dummyReview.review.itinerary_id)
           .field('user_id', dummyReview.review.user_id)
-          .field('removedImages', ['dummy1.jpg'])
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(403)
@@ -380,10 +362,8 @@ describe('CRUD Review Endpoints', () => {
           .set('Content-Type', 'application/json')
           .field('score', 9)
           .field('message', 'revising review')
-          .attach('images', fs.readFileSync('./test/assets/chicken_3.png'), 'chicken_3.png')
           .field('itinerary_id', dummyReview.review.itinerary_id)
           .field('user_id', dummyReview.review.user_id)
-          .field('removedImages', ['dummy1.jpg'])
           .end(function (err, res) {
             expect(err).to.be.null
             expect(res).to.have.status(404)
