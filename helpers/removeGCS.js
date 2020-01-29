@@ -16,7 +16,7 @@ async function deleteFileFromGCS(url, next) {
       .file(filename)
       .delete()
   } catch (err) {
-    next(err)
+    // next(err)
   }
 }
 

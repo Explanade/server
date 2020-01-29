@@ -9,7 +9,6 @@ const morgan = require("morgan")
 const app = express()
 const routes = require("./routes")
 const { errorHandler } = require("./middlewares/errorHandler")
-const seed = require('./seeders');
 
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))
@@ -17,6 +16,5 @@ app.use(express.json())
 app.use(morgan("dev"))
 app.use('/', routes)
 app.use(errorHandler)
-// seed();
 
 module.exports = app

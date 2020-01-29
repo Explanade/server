@@ -89,47 +89,47 @@ class UserController {
             .catch(next)
     }
 
-    static googleLogin(req, res, next) {
-        console.log('trigered?')
-        const clientId = process.env.GOOGLE_CLIENT_ID
-        console.log(clientId)
-        console.log(req.body.token)
-        let googlePayload = ''
-        const client = new OAuth2Client(clientId)
-        client.verifyIdToken({
-            idToken: req.body.token,
-            audience: clientId
-        })
-            .then(ticket => {
-                googlePayload = ticket.getPayload()
-                return User.findOne({
-                    email: googlePayload.email
-                })
-            })
-            .then(user => {
-                if (user) {
-                    return user
-                } else {
-                    return User.create({
-                        name: googlePayload.name,
-                        email: googlePayload.email,
-                        password: process.env.PASSWORD_USER,
-                        profile_picture: googlePayload.picture
-                    })
-                }
-            })
-            .then(newUser => {
-                let user = {
-                    name: newUser.name,
-                    email: newUser.email,
-                    id: newUser._id
-                },
-                    token = generateToken(user)
-                res.status(200).json({ token, user })
+    // static googleLogin(req, res, next) {
+    //     console.log('trigered?')
+    //     const clientId = process.env.GOOGLE_CLIENT_ID
+    //     console.log(clientId)
+    //     console.log(req.body.token)
+    //     let googlePayload = ''
+    //     const client = new OAuth2Client(clientId)
+    //     client.verifyIdToken({
+    //         idToken: req.body.token,
+    //         audience: clientId
+    //     })
+    //         .then(ticket => {
+    //             googlePayload = ticket.getPayload()
+    //             return User.findOne({
+    //                 email: googlePayload.email
+    //             })
+    //         })
+    //         .then(user => {
+    //             if (user) {
+    //                 return user
+    //             } else {
+    //                 return User.create({
+    //                     name: googlePayload.name,
+    //                     email: googlePayload.email,
+    //                     password: process.env.PASSWORD_USER,
+    //                     profile_picture: googlePayload.picture
+    //                 })
+    //             }
+    //         })
+    //         .then(newUser => {
+    //             let user = {
+    //                 name: newUser.name,
+    //                 email: newUser.email,
+    //                 id: newUser._id
+    //             },
+    //                 token = generateToken(user)
+    //             res.status(200).json({ token, user })
 
-            })
-            .catch(next)
-    }
+    //         })
+    //         .catch(next)
+    // }
 
     static findAll(req, res, next) {
         User.find()
