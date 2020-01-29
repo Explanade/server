@@ -1,10 +1,12 @@
 const User = require('../models/user'),
     { compare } = require('../helpers/bcrypt'),
     { generateToken } = require('../helpers/jwt'),
-    { OAuth2Client } = require('google-auth-library'),
+    // { OAuth2Client } = require('google-auth-library'),
     toUpdate = require('../helpers/updateField'),
     removeGCS = require('../helpers/removeGCS');
 
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client(process.env.CLINT_ID);
 
 class UserController {
 
@@ -60,7 +62,6 @@ class UserController {
     }
 
     static login(req, res, next) {
-        console.log(req.body)
         let { email, password } = req.body
         User.findOne({
             email: email
@@ -89,14 +90,16 @@ class UserController {
     }
 
     static googleLogin(req, res, next) {
+       
         const clientId = process.env.GOOGLE_CLIENT_ID
         let googlePayload = ''
-        const client = new OAuth2Client(clientId)
+       
         client.verifyIdToken({
             idToken: req.body.token,
             audience: clientId
         })
             .then(ticket => {
+                console.log(ticket)
                 googlePayload = ticket.getPayload()
                 return User.findOne({
                     email: googlePayload.email
@@ -124,7 +127,10 @@ class UserController {
                 res.status(200).json({ token, user })
 
             })
-            .catch(next)
+            .catch(err => {
+                console.log(err)
+                next(err)
+            })
     }
 
     static findAll(req, res, next) {
