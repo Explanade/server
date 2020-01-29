@@ -9,6 +9,7 @@ const User = require('../models/user'),
 class UserController {
 
     static register(req, res, next) {
+        console.log('register?')
         let { name, email, password } = req.body
         let profile_picture = ''
         if (req.file) {
@@ -89,7 +90,10 @@ class UserController {
     }
 
     static googleLogin(req, res, next) {
+        console.log('trigered?')
         const clientId = process.env.GOOGLE_CLIENT_ID
+        console.log(clientId)
+        console.log(req.body.token)
         let googlePayload = ''
         const client = new OAuth2Client(clientId)
         client.verifyIdToken({
