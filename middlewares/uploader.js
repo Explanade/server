@@ -21,11 +21,11 @@ const sendUploadToGCS = async (req, res, next) => {
       contentType: req.file.mimetype
     }
   })
-  // stream.on('error', (err) => {
-  //   console.log('This is the invalid field ->', err)
-  //   req.file.cloudStorageError = err
-  //   next(err)
-  // })
+  stream.on('error', (err) => {
+    console.log('This is the invalid field ->', err)
+    req.file.cloudStorageError = err
+    next(err)
+  })
   stream.on('finish', () => {
     req.file.cloudStorageObject = gcsname
     file.makePublic().then(() => {
