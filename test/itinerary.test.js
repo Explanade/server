@@ -10,6 +10,7 @@ const expect = chai.expect
 
 let userToken = ''
 let userToken2 = ''
+let invalidToken = ''
 let dummyItinerary = ''
 let itinWithActivities = ''
 let invalidItineraryId = '5e2b17d2a426a922c7c403c8'
@@ -24,6 +25,12 @@ let secondUser = {
   name: 'dummy user 2',
   email: 'dummyuser2@mail.com',
   password: 'user321',
+}
+
+let thirdUser = {
+  name: 'dummy user review 3',
+  email: 'dummyuserreview3@mail.com',
+  password: 'userreview321',
 }
 
 let itineraryData = {
@@ -78,6 +85,17 @@ before(function(done) {
         name: user2.name,
         email: user2.email
       })
+      return User.create(thirdUser)
+    })
+    .then(user3 => {
+      invalidToken = generateToken({
+        id: user3._id,
+        name: user3.name,
+        email: user3.email
+      })
+      return User.deleteOne({ _id: user3._id })
+    })
+    .then(_ => {
       done()
     })
     .catch(console.log)
@@ -240,7 +258,76 @@ describe('CRD Itinerary Endpoints', function() {
         })
       })
     })
-    
+    describe('error process', () => {
+      it('should return an object with message key and status code 401 cause of missing token', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${dummyItinerary._id}`)
+        .set('Content-Type', 'application/json')
+        .send({budget: 10000000})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message[0]).to.equal('you have to login first')
+          done()
+        })
+      })
+      it('should return an object with message key and status code 400 cause of missing budget', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${dummyItinerary._id}`)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(400)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('bad request')
+          done()
+        })
+      })
+      it('should return an object with message key and status code 401 cause of invalid token', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${dummyItinerary._id}`)
+        .set('token', invalidToken)
+        .set('Content-Type', 'application/json')
+        .send({budget: 10000000})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('Authentication Failed')
+          done()
+        })
+      })
+      it('should return an object with message key and status code 403 cause of wrong user token', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${dummyItinerary._id}`)
+        .set('token', userToken2)
+        .set('Content-Type', 'application/json')
+        .send({budget: 10000000})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(403)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('You are not authorized to perform this action')
+          done()
+        })
+      })
+      it('should return an object with message key and status code 404 cause of invalid itinerary id', (done) => {
+        chai.request(app)
+        .patch(`/itineraries/${invalidItineraryId}`)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send({budget: 10000000})
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('Itinerary not found')
+          done()
+        })
+      })
+    })
   })
   
   describe('GET /itineraries', () => {
@@ -324,10 +411,23 @@ describe('CRD Itinerary Endpoints', function() {
       it('should send a status code 404 cause of wrong endpoint', (done) => {
         chai.request(app)
         .get('/itineraries/my-itinerary')
+        .set('token', userToken)
         .end(function(err, res) {
           expect(err).to.be.null
           expect(res).to.have.status(404)
           expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+      it('should send an object with message key and status code 401', (done) => {
+        chai.request(app)
+        .get('/itineraries/my-itineraries')
+        .set('token', invalidToken)
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('Authentication Failed')
           done()
         })
       })
@@ -342,6 +442,20 @@ describe('CRD Itinerary Endpoints', function() {
         .end((err, res) => {
           expect(err).to.be.null
           expect(res).to.have.status(403)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('You are not authorized to perform this action')
+          done()
+        })
+      })
+      it('should send an object with message Authentication Failed and status code 401 because of invalid token (no such user in database)', (done) => {
+        chai.request(app)
+        .delete('/itineraries/' + dummyItinerary._id)
+        .set('token', invalidToken)
+        .end((err, res) => {
+          expect(err).to.be.null
+          expect(res).to.have.status(401)
+          expect(res.body).to.be.an('object')
+          expect(res.body.message).to.equal('Authentication Failed')
           done()
         })
       })

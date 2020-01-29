@@ -128,11 +128,15 @@ class ItineraryController {
   static addBudget(req, res, next) {
     let itinerary_id = req.params.id
     let { budget } = req.body
-    Itinerary.findByIdAndUpdate(itinerary_id, { $set: { budget } }, { omitUndefined: true, new: true })
-      .then(result => {
-        res.status(200).json(result)
-      })
-      .catch(next)
+    if(!budget) {
+      res.status(400).json({ message: 'bad request' })
+    } else {
+      Itinerary.findByIdAndUpdate(itinerary_id, { $set: { budget } }, { omitUndefined: true, new: true })
+        .then(result => {
+          res.status(200).json(result)
+        })
+        .catch(next)
+    }
   }
 
   static deleteItinerary(req, res, next) {

@@ -32,7 +32,6 @@ let thirdUser = {
   password: 'useractivity321',
 }
 
-
 let itineraryData = {
   name: 'My Awesome Trip',
   location: {
@@ -301,7 +300,6 @@ describe('CRUD Activity Endpoints', () => {
       })
     })
   })
-
   
   describe('PATCH /activities/:id', () => {
     describe('success process', () => {
@@ -323,7 +321,25 @@ describe('CRUD Activity Endpoints', () => {
         })
       })
     })
-    
+    describe('error process', () => {
+      it('should send status code 404 cause of wrong endpoint', (done) => {
+        let updateData = {
+          place_id: dummyActivity.activity.places[0].id,
+          status: true
+        }
+        chai.request(app)
+        .patch('/activity/' + dummyActivity.activity._id)
+        .set('token', userToken)
+        .set('Content-Type', 'application/json')
+        .send(updateData)
+        .end(function(err, res) {
+          expect(err).to.be.null
+          expect(res).to.have.status(404)
+          expect(res.body).to.be.an('object')
+          done()
+        })
+      })
+    })
   })
   
   describe('DELETE /activities/:id', () => {
