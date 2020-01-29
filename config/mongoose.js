@@ -13,5 +13,5 @@ mongoose.connect(db, {
         console.log(`Explanade connected to atlas`)
     })
     .catch((err) => {
-        // console.log(err, 'Explanade failed connect to database')
+        console.log(err, 'Explanade failed connect to database')
     })
