@@ -1,4 +1,4 @@
 node_modules
 .env
-googlebucket.json
 .nyc_output
+googlebucket.json
