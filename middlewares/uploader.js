@@ -1,5 +1,7 @@
 'use strict'
-require('dotenv').config()
+if (process.env !== 'production') {
+  require('dotenv').config()
+}
 const { Storage } = require('@google-cloud/storage')
 const CLOUD_BUCKET = process.env.GCS_BUCKET
 const storage = new Storage({
